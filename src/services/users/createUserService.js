@@ -2,7 +2,7 @@ const logger = require('../../utils/logger');
 const logVar = 'Services | createUserService | ';
 const enums = require('../../utils/enums');
 
-module.exports = function buildCreateUserService(usersRepository) {
+module.exports = function buildCreateUserService(usersRepository, userRolesRepository) {
     return Object.freeze({
         createUser,
         validateEmail,
@@ -22,9 +22,12 @@ module.exports = function buildCreateUserService(usersRepository) {
             const result = await usersRepository.createUser(email, password, userType);
 
             logger.info(logVar + 'Assigning default role to user');
-            await
+            await userRolesRepository.assignRoleToUser(result.id, userType);
             logger.info(logVar + 'User creation successful in service');
-            return result;
+            return {
+                statusCode: 201,
+                message: 'User created successfully'
+            }
         } catch (error) {
             logger.error(logVar + 'Error in createUser service: ' + error.message);
             throw new Error(error.message);

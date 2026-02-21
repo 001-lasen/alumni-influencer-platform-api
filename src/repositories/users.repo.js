@@ -10,26 +10,27 @@ module.exports = function buildUsersRepository(models) {
     async function createUser(email, password, userType) {
         logger.info(`${logVar}In createUser repository`);
 
+        const cleanEmail = email.trim().toLowerCase();
+
         try {
+            logger.info(logVar + 'Checking if user with email already exists');
             const existingUser = await models.users.findOne({
-                where: { email: email }
+                where: { email: cleanEmail }
             })
+
             if (existingUser) {
-                logger.warn(`${logVar}User with email ${email} already exists`);
+                logger.warn(`${logVar}User with email ${cleanEmail} already exists`);
                 throw new Error('User with this email already exists');
             }
 
             const user = await models.users.create({
-                email: email,
+                email: cleanEmail,
                 passwordHash: password,
                 userType: userType
             });
             logger.info(logVar + 'User created successfully in repository with email: ' + user.email);
 
-            return {
-                statusCode: 201,
-                message: 'User created successfully'
-            };
+            return user;
         } catch (error) {
             logger.error(`${logVar}Error: ${error.message}`);
             throw error;

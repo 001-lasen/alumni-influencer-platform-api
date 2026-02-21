@@ -5,7 +5,7 @@ const buildHashPasswordService = require('./utilities/hashPasswordService');
 const buildUserLoginService = require('./users/userLoginService');
 
 //user services
-module.exports.createUser = buildCreateUserService(repositories.usersRepository);
+module.exports.createUser = buildCreateUserService(repositories.usersRepository, repositories.userRolesRepository);
 module.exports.userLogin = buildUserLoginService(repositories.usersRepository);
 
 //utilities services
