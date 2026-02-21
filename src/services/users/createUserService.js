@@ -14,7 +14,11 @@ module.exports = function buildCreateUserService(usersRepository) {
         validateEmail(email);
 
         try {
+            logger.info(logVar + 'Creating user');
             const result = await usersRepository.createUser(email, password);
+
+            logger.info(logVar + 'Assigning default role to user');
+            await
             logger.info(logVar + 'User creation successful in service');
             return result;
         } catch (error) {
