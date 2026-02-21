@@ -24,7 +24,8 @@ const server = http.createServer(app);
 
         await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
         console.log('Syncing models...'    );
-        await db.sequelize.sync({ alter: true });
+        // await db.sequelize.sync({ alter: true });
+        await db.sequelize.sync({ force: true });
         await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
         console.log('Models synced');
 
