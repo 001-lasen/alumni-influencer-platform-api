@@ -10,13 +10,6 @@ var indexRouter = require('./src/routes/index');
 
 var app = express();
 
-// // Only load dotenv in non-production (local dev)
-// if (process.env.NODE_ENV !== 'production') {
-//   const envFile = process.env.NODE_ENV || 'local';
-//   dotenv.config({ path: path.resolve(__dirname, `env/.env.${envFile}`) });
-//   console.log('[INFO] Loaded environment variables from .env file:', envFile);
-// }
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

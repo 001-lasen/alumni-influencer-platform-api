@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const userRoles = sequelize.define('userRoles', {
+const profileImages = sequelize.define('profileImages', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -13,26 +13,33 @@ const userRoles = sequelize.define('userRoles', {
         allowNull: false,
         unique: true,
     },
-    roleName: {
+    imageUrl: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
     },
-    description: {
+    imageId: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    isDeleted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
     },
     createdBy: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: DataTypes.INTEGER,
+        allowNull: false,
     },
     updatedBy: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: true,
     }
-},{
-    tableName: 'user_roles',
+}, {
+    tableName: 'profile_images',
     timestamps: true
 });
 
-module.exports = userRoles;
+module.exports = profileImages;
