@@ -1,6 +1,7 @@
 const sequelize = require('../config/sequelize');
 
 const users = require('./users');
+const userRoles = require('./userRoles');
 const userRoleUserMapping = require('./userRoleUserMapping');
 const userDetails = require('./userDetails');
 const profileImages = require('./profileImages');
