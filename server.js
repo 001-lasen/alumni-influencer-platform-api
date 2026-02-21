@@ -3,6 +3,10 @@ require('dotenv').config({
     path: require('path').resolve(__dirname, 'env/.env.' + (process.env.NODE_ENV || 'local')),
 });
 
+if (!process.env.DB_HOST) {
+    console.warn('Missing DB_HOST env var. Check your env file.');
+}
+
 const http = require('http');
 const app = require('./app');
 const db = require('./src/models');
@@ -14,10 +18,15 @@ const server = http.createServer(app);
 
 (async () => {
     try {
+        console.log('Connecting to database...');
         await db.sequelize.authenticate();
         console.log('Database connected');
 
-        await db.sequelize.sync({ alter: true });
+        await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+        console.log('Syncing models...'    );
+        // await db.sequelize.sync({ alter: true });
+        await db.sequelize.sync({ force: true });
+        await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
         console.log('Models synced');
 
         server.listen(port, () => {
