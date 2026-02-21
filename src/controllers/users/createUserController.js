@@ -13,6 +13,7 @@ module.exports = function buildCreateUserController(createUserService) {
 
         let userEmail = httpRequest.body.email;
         let hashedPassword = httpRequest.body.password;
+        let userType = httpRequest.body.userType;
 
         if (!userEmail || !hashedPassword) {
             data.statusCode = 400;
@@ -28,7 +29,7 @@ module.exports = function buildCreateUserController(createUserService) {
         logger.info(logVar + 'Creating user with email: ' + userEmail);
 
         try {
-            data = await createUserService.createUser(userEmail, hashedPassword);
+            data = await createUserService.createUser(userEmail, hashedPassword, userType);
             logger.info(logVar + 'User created successfully');
             return {
                 headers,

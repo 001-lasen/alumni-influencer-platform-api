@@ -7,7 +7,7 @@ module.exports = function buildUsersRepository(models) {
         findUserByEmail
     });
 
-    async function createUser(email, password) {
+    async function createUser(email, password, userType) {
         logger.info(`${logVar}In createUser repository`);
 
         try {
@@ -21,7 +21,8 @@ module.exports = function buildUsersRepository(models) {
 
             const user = await models.users.create({
                 email: email,
-                passwordHash: password
+                passwordHash: password,
+                userType: userType
             });
             logger.info(logVar + 'User created successfully in repository with email: ' + user.email);
 
