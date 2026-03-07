@@ -4,7 +4,7 @@ const logVar = 'Repositories | userRoles.repo | ';
 module.exports = function buildUserRolesRepository(models) {
     return Object.freeze({
         assignRoleToUser,
-        getUserRoles
+        getUserRoleIds
     });
 
     async function assignRoleToUser(userId, userType) {
@@ -37,7 +37,23 @@ module.exports = function buildUserRolesRepository(models) {
         }
     }
 
-    async function getUserRoles(userId) {
+    async function getUserRoleIds(userId) {
         logger.info(logVar + 'In getUserRoles repository');
+
+        try {
+            const userRoleMappings = await models.userRoleUserMapping.findAll({
+                where: { userId: userId },
+                include: [{
+                    roleId: 'roleId',
+                }]
+            });
+
+            const roleIds = userRoleMappings.map((m) => m.roleId);
+            logger.info(logVar + `Retrieved ${roleIds.length} role mappings for user ID: ${userId}`);
+            return roleIds;
+        } catch (error) {
+            logger.error(logVar + 'Error retrieving user roles: ' + error.message);
+            throw error;
+        }
     }
 }
