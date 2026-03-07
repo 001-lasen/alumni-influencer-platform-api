@@ -22,11 +22,8 @@ const server = http.createServer(app);
         await db.sequelize.authenticate();
         console.log('Database connected');
 
-        await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
         console.log('Syncing models...'    );
-        // await db.sequelize.sync({ alter: true });
-        await db.sequelize.sync({ force: true });
-        await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+        await db.sequelize.sync({ alter: true });
         console.log('Models synced');
 
         server.listen(port, () => {

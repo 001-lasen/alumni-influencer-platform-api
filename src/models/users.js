@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const users = sequelize.define('users', {
+const Users = sequelize.define('Users', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -28,10 +28,26 @@ const users = sequelize.define('users', {
     isVerified: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
+    },
+    userType: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    otp: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    otpExpiry: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+    otpAttempts: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
     }
 },{
     tableName: 'users',
     timestamps: true
 });
 
-module.exports = users;
+module.exports = Users;

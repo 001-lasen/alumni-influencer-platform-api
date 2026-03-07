@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const userRoleUserMapping = sequelize.define('userRoleUserMapping', {
+const UserRoleUserMapping = sequelize.define('UserRoleUserMapping', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -20,18 +20,10 @@ const userRoleUserMapping = sequelize.define('userRoleUserMapping', {
     roleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-    },
-    createdBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    updatedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
     }
 }, {
     tableName: 'user_role_user_mapping',
     timestamps: true
 });
 
-module.exports = userRoleUserMapping;
+module.exports = UserRoleUserMapping;

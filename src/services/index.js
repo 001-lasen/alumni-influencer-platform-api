@@ -1,12 +1,25 @@
 const repositories = require('../repositories');
 
-const buildCreateUserService = require('./users/createUserService');
-const buildHashPasswordService = require('./utilities/hashPasswordService');
-const buildUserLoginService = require('./users/userLoginService');
+const buildCreateUserService = require('./users/createUser.service');
+const buildHashPasswordService = require('./utilities/hashPassword.service');
+const buildUserLoginService = require('./users/userLogin.service');
+const buildVerifyEmailService = require('./users/verifyEmail.service');
 
-//user services
-module.exports.createUser = buildCreateUserService(repositories.usersRepository);
-module.exports.userLogin = buildUserLoginService(repositories.usersRepository);
+// user services
+const verifyEmail = buildVerifyEmailService(repositories.usersRepository);
+const createUser = buildCreateUserService(
+    verifyEmail,
+    repositories.usersRepository,
+    repositories.userRolesRepository
+);
+const userLogin = buildUserLoginService(verifyEmail, repositories.usersRepository, repositories.userRolesRepository);
 
-//utilities services
-module.exports.hashPassword = buildHashPasswordService();
+// utility services
+const hashPassword = buildHashPasswordService();
+
+module.exports = {
+    createUser,
+    verifyEmail,
+    userLogin,
+    hashPassword
+};
