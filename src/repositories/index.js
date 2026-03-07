@@ -1,7 +1,7 @@
 const db = require('../models/index')
 
 const buildUsersRepository = require('./users.repo')
-const buildUserRolesRepository = require('./userRolesRepository');
+const buildUserRolesRepository = require('./userRoles.repo');
 
 //user repositories
 module.exports.usersRepository = buildUsersRepository(db);

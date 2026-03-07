@@ -1,8 +1,8 @@
 const services = require('../services');
 
-const buildCreateUserController = require('./users/createUserController');
-const buildHashPasswordController = require('./utilities/hashPasswordController');
-const buildUserLoginController = require('./users/userLoginController');
+const buildCreateUserController = require('./users/createUser.controller');
+const buildHashPasswordController = require('./utilities/hashPassword.controller');
+const buildUserLoginController = require('./users/userLogin.controller');
 
 //user controllers
 module.exports.createUser = buildCreateUserController(services.createUser);
