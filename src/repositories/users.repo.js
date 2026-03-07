@@ -4,7 +4,10 @@ const logVar = 'Repositories | users.repo | ';
 module.exports = function buildUsersRepository(models) {
     return Object.freeze({
         createUser,
-        findUserByEmail
+        findUserByEmail,
+        saveOTP,
+        markEmailVerified,
+        incrementOTPAttempts
     });
 
     async function createUser(email, password, userType) {
@@ -13,10 +16,10 @@ module.exports = function buildUsersRepository(models) {
         const cleanEmail = email.trim().toLowerCase();
 
         try {
-            logger.info(logVar + 'Checking if user with email already exists');
+            logger.info(`${logVar}Checking if user with email already exists`);
             const existingUser = await models.users.findOne({
-                where: { email: cleanEmail }
-            })
+                where: {email: cleanEmail}
+            });
 
             if (existingUser) {
                 logger.warn(`${logVar}User with email ${cleanEmail} already exists`);
@@ -28,7 +31,7 @@ module.exports = function buildUsersRepository(models) {
                 passwordHash: password,
                 userType: userType
             });
-            logger.info(logVar + 'User created successfully in repository with email: ' + user.email);
+            logger.info(`${logVar}User created successfully in repository with email: ${user.email}`);
 
             return user;
         } catch (error) {
@@ -38,18 +41,76 @@ module.exports = function buildUsersRepository(models) {
     }
 
     async function findUserByEmail(email) {
-        logger.info(logVar + 'Finding user by email');
+        logger.info(`${logVar}In findUserByEmail repository`);
+
+        const cleanEmail = email.trim().toLowerCase();
 
         try {
             const user = await models.users.findOne({
-                where: { email: email }
+                where: {email: cleanEmail}
             });
-            logger.info(logVar + 'End of findUserByEmail repository');
-            return user;
+            logger.info(`${logVar}End of findUserByEmail repository`);
+            return user || null;
         } catch (error) {
-            logger.error(logVar + 'Error finding user by email: ' + error.message);
+            logger.error(`${logVar}Error finding user by email: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async function saveOTP(userId, otpHash, expiry) {
+        logger.info(`${logVar}Saving OTP for user ID: ${userId}`);
+
+        try {
+            await models.users.update(
+                {
+                    otp: otpHash,
+                    otpExpiry: expiry,
+                    otpAttempts: 0
+                },
+                {
+                    where: {id: userId}
+                }
+            );
+            logger.info(`${logVar}OTP saved successfully for user ID: ${userId}`);
+        } catch (error) {
+            logger.error(`${logVar}Error saving OTP: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async function markEmailVerified(userId) {
+        logger.info(`${logVar}Marking email as verified for user ID: ${userId}`);
+
+        try {
+            await models.users.update(
+                {
+                    isVerified: true,
+                    otp: null,
+                    otpExpiry: null,
+                    otpAttempts: 0
+                },
+                {
+                    where: {id: userId}
+                }
+            );
+            logger.info(`${logVar}Email marked as verified for user ID: ${userId}`);
+        } catch (error) {
+            logger.error(`${logVar}Error marking email as verified: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async function incrementOTPAttempts(userId) {
+        logger.info(`${logVar}Incrementing OTP attempts for user ID: ${userId}`);
+
+        try {
+            await models.users.increment('otpAttempts', {
+                where: {id: userId}
+            });
+            logger.info(`${logVar}OTP attempts incremented for user ID: ${userId}`);
+        } catch (error) {
+            logger.error(`${logVar}Error incrementing OTP attempts: ${error.message}`);
             throw error;
         }
     }
 }
-

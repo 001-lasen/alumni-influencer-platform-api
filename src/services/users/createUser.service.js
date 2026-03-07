@@ -1,8 +1,10 @@
 const logger = require('../../utils/logger');
 const logVar = 'Services | createUserService | ';
 const enums = require('../../utils/enums');
+const {generateOTP, getOTPExpiry} = require("../../utils/otp");
+const encryptionUtil = require('../../utils/encryption');
 
-module.exports = function buildCreateUserService(usersRepository, userRolesRepository) {
+module.exports = function buildCreateUserService(verifyEmail, usersRepository, userRolesRepository) {
     return Object.freeze({
         createUser,
         validateEmail,
@@ -24,6 +26,19 @@ module.exports = function buildCreateUserService(usersRepository, userRolesRepos
             logger.info(logVar + 'Assigning default role to user');
             await userRolesRepository.assignRoleToUser(result.id, userType);
             logger.info(logVar + 'User creation successful in service');
+
+            logger.info(logVar + 'Generating OTP for email verification');
+            const otp = generateOTP();
+            const hashedOTP = await encryptionUtil.hash(otp);
+            const otpExpiry = getOTPExpiry();
+
+            logger.info(logVar + 'Sending OTP to user email: ' + email);
+            await verifyEmail.sendOtpEmail(email, otp);
+
+            logger.info(logVar + 'Storing OTP hash and expiry in database for userId: ' + result.id);
+            await usersRepository.saveOTP(result.id, hashedOTP, otpExpiry);
+
+            logger.info(logVar + 'User created successfully');
             return {
                 statusCode: 201,
                 message: 'User created successfully'

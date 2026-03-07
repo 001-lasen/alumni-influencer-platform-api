@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const {JWT_SECRET, JWT_EXPIRATION} = require('../utils/environmentConstants');
+const {JWT_SECRET, JWT_EXPIRATION} = require('./constants');
 
 module.exports = {
     generateToken(payload) {
