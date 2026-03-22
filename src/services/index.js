@@ -7,11 +7,7 @@ const buildVerifyEmailService = require('./users/verifyEmail.service');
 
 // user services
 const verifyEmail = buildVerifyEmailService(repositories.usersRepository);
-const createUser = buildCreateUserService(
-    verifyEmail,
-    repositories.usersRepository,
-    repositories.userRolesRepository
-);
+const createUser = buildCreateUserService(verifyEmail, repositories.usersRepository, repositories.userRolesRepository);
 const userLogin = buildUserLoginService(verifyEmail, repositories.usersRepository, repositories.userRolesRepository);
 
 // utility services

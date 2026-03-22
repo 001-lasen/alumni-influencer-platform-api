@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const callback = require('../utils/callback');
-const { createUser, userLogin } = require('../controllers');
+const { createUser, userLogin, resendOTP} = require('../controllers');
 
 router.post('/create-user', callback(createUser));
 router.post('/login', callback(userLogin));
+router.get('/resend-otp', callback(resendOTP));
 
 module.exports = router;

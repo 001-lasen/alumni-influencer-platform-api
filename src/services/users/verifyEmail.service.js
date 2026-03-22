@@ -4,13 +4,46 @@ const encryptionUtil = require('../../utils/encryption');
 const constants = require('../../utils/constants');
 const otpEmailTemplate = require('../../utils/templates/otpEmail.template');
 const transporter = require('../../utils/emailTransporter');
+const {generateOTP, getOTPExpiry} = require("../../utils/otp");
 
 module.exports = function buildVerifyEmailService(usersRepository) {
     return Object.freeze({
+        resendOTP,
         sendOtpEmail,
-        verifyEmail,
-        resendOTP
+        verifyEmail
     });
+
+    async function resendOTP(email) {
+        logger.info(logVar + 'In resendOTP service');
+
+        const user = await usersRepository.findUserByEmail(email);
+        if (!user) {
+            logger.warn(logVar + 'User not found with email: ' + email);
+            throw new Error('User not found');
+        }
+
+        if (user.isVerified) {
+            logger.info(logVar + 'User email already verified for email: ' + email);
+            throw new Error('Email is already verified');
+        }
+
+        logger.info(logVar + 'Generating OTP for email verification');
+        const otp = generateOTP();
+        const hashedOTP = await encryptionUtil.hash(otp);
+        const otpExpiry = getOTPExpiry();
+
+        logger.info(logVar + 'Sending OTP to user email: ' + email);
+        await sendOtpEmail(email, otp);
+
+        logger.info(logVar + 'Storing OTP hash and expiry in database for userId: ' + user.id);
+        await usersRepository.saveOTP(user.id, hashedOTP, otpExpiry);
+
+        logger.info(logVar + 'OTP resent successfully to email: ' + email);
+        return {
+            statusCode: 200,
+            message: 'OTP resent successfully'
+        }
+    }
 
     async function sendOtpEmail(email, otp) {
         logger.info(logVar + 'In sendEmail service');
@@ -68,22 +101,5 @@ module.exports = function buildVerifyEmailService(usersRepository) {
             statusCode: 200,
             message: 'Email verified successfully'
         };
-    }
-
-    async function resendOTP(email) {
-        logger.info(logVar + 'In resendOTP service');
-
-        const user = await usersRepository.findUserByEmail(email);
-        if (!user) {
-            logger.warn(logVar + 'User not found with email: ' + email);
-            throw new Error('User not found');
-        }
-
-        if (user.isVerified) {
-            logger.info(logVar + 'User email already verified for email: ' + email);
-            throw new Error('Email is already verified');
-        }
-
-        // Generate and save new OTP logic here (not implemented in this snippet)
     }
 }
