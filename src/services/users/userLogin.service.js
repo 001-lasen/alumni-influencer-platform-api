@@ -29,13 +29,13 @@ module.exports = function buildUserLoginService(usersRepository, userRolesReposi
         }
         logger.info(logVar + 'User validated successfully.');
 
-        // if (!user.isVerified) {
-        //     logger.info(logVar + 'User email not verified for email');
-        //     throw new Error('Please verify your email before logging in');
-        // }
+        if (!user.isVerified) {
+            logger.info(logVar + 'User email not verified for email');
+            throw new Error('Please verify your email before logging in');
+        }
 
         logger.info(logVar + 'Generating access token for user');
-        const accessToken = generateAccessToken(user.id, user.email);
+        const accessToken = await generateAccessToken(user.id, user.email);
 
         logger.info(logVar + 'Login successful, returning access token');
         return {
