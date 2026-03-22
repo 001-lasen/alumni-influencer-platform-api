@@ -2,7 +2,7 @@ const logger = require('../../utils/logger');
 const logVar = 'Services | verifyEmailService | ';
 const encryptionUtil = require('../../utils/encryption');
 const constants = require('../../utils/constants');
-const verifyEmailOTPTemplate = require('../../utils/templates/verifyEmailOTP.template');
+const verifyEmailOTPTemplate = require('../../utils/templates/verifyEmailOTPEmail.template');
 const transporter = require('../../utils/emailTransporter');
 const {generateOTP, getOTPExpiry} = require("../../utils/otp");
 
