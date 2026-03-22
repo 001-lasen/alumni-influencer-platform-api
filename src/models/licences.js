@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const UserDetails = sequelize.define('UserDetails', {
+const Licences = sequelize.define('Licences', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -10,43 +10,27 @@ const UserDetails = sequelize.define('UserDetails', {
     uuid: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        allowNull: false
+        allowNull: false,
     },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    firstName: {
+    licenceName: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    lastName: {
+    awardingBody: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    userName: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    contactNumber: {
+    licenceUrl: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    email: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    linkedInProfile: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    profileImageId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-    },
-    biography: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+    completionDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
     },
     createdBy: {
         type: DataTypes.INTEGER,
@@ -57,13 +41,12 @@ const UserDetails = sequelize.define('UserDetails', {
         allowNull: true,
     }
 }, {
-    tableName: 'user_details',
+    tableName: 'licences',
     timestamps: true,
-    indexes: [
-        { unique: true, fields: ['uuid'] },
-        { unique: true, fields: ['userName'] },
-        { unique: true, fields: ['email'] },
-    ]
+    indexes: [{
+        unique: true,
+        fields: ['uuid']
+    }]
 });
 
-module.exports = UserDetails;
+module.exports = Licences;
