@@ -5,6 +5,7 @@ const userRoles = require('./userRoles');
 const userRoleUserMapping = require('./userRoleUserMapping');
 const userDetails = require('./userDetails');
 const profileImages = require('./profileImages');
+const refreshTokens = require('./refreshToken');
 
 const db = {
     sequelize,
@@ -13,6 +14,7 @@ const db = {
     userRoleUserMapping,
     userDetails,
     profileImages,
+    refreshTokens
 };
 
 db.users.hasOne(db.userDetails, { foreignKey: 'userId', as : 'details' });
@@ -23,5 +25,8 @@ db.profileImages.belongsTo(db.users, { foreignKey: 'userId' });
 
 db.userRoles.belongsToMany(db.users, { through: db.userRoleUserMapping, foreignKey: 'roleId', as: 'users' });
 db.users.belongsToMany(db.userRoles, { through: db.userRoleUserMapping, foreignKey: 'userId', as: 'roles' });
+
+db.users.hasMany(db.refreshTokens, { foreignKey: 'userId', as: 'refreshTokens' });
+db.refreshTokens.belongsTo(db.users, { foreignKey: 'userId' });
 
 module.exports = db;
