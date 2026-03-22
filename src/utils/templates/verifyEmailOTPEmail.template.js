@@ -1,4 +1,4 @@
-module.exports = function otpEmailTemplate(otp) {
+module.exports = function verifyEmailOTPTemplate(otp) {
     return `
     <!DOCTYPE html>
     <html>

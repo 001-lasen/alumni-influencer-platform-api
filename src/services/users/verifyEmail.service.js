@@ -1,15 +1,12 @@
 const logger = require('../../utils/logger');
 const logVar = 'Services | verifyEmailService | ';
 const encryptionUtil = require('../../utils/encryption');
-const constants = require('../../utils/constants');
-const otpEmailTemplate = require('../../utils/templates/otpEmail.template');
-const transporter = require('../../utils/emailTransporter');
 const {generateOTP, getOTPExpiry} = require("../../utils/otp");
+const {sendOtpEmail} = require('../../utils/emailUtil');
 
 module.exports = function buildVerifyEmailService(usersRepository) {
     return Object.freeze({
         resendOTP,
-        sendOtpEmail,
         verifyEmail
     });
 
@@ -39,29 +36,7 @@ module.exports = function buildVerifyEmailService(usersRepository) {
         await usersRepository.saveOTP(user.id, hashedOTP, otpExpiry);
 
         logger.info(logVar + 'OTP resent successfully to email: ' + email);
-        return {
-            statusCode: 200,
-            message: 'OTP resent successfully'
-        }
-    }
-
-    async function sendOtpEmail(email, otp) {
-        logger.info(logVar + 'In sendEmail service');
-
-        const mailOptions = {
-            from: `"Eastminster Alumni" <${constants.EMAIL_USER}>`,
-            to: email,
-            subject: 'OTP - Email Verification',
-            html: otpEmailTemplate(otp)
-        }
-
-        try {
-            await transporter.sendMail(mailOptions);
-            logger.info(logVar + 'OTP email sent successfully to: ' + email);
-        } catch (error) {
-            logger.error(logVar + 'Error sending OTP email to ' + email + ': ' + error.message);
-            throw new Error('Failed to send OTP email');
-        }
+        return {statusCode: 200, message: 'OTP resent successfully'};
     }
 
     async function verifyEmail(email, otp) {

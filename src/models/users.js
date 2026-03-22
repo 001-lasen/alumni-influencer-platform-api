@@ -44,8 +44,12 @@ const Users = sequelize.define('Users', {
     otpAttempts: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
-    }
-},{
+    },
+    otpVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+}, {
     tableName: 'users',
     timestamps: true
 });
