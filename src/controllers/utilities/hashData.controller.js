@@ -1,7 +1,7 @@
 const logger = require('../../utils/logger');
 const logVar = 'Controller | hashPasswordController | ';
 
-module.exports = function buildHashPasswordController(hashPasswordService) {
+module.exports = function buildHashDataController(hashDataService) {
     return async function hashPasswordController(httpRequest) {
         logger.info(logVar + 'In hashPassword controller');
 
@@ -22,7 +22,7 @@ module.exports = function buildHashPasswordController(hashPasswordService) {
 
         logger.info(logVar + 'Hashing password');
         try {
-            const hashedPassword = await hashPasswordService.hashPassword(password);
+            const hashedPassword = await hashDataService.hashData(password);
             logger.info(logVar + 'Password hashed successfully');
             return {
                 headers,

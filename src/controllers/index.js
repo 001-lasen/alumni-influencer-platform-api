@@ -1,7 +1,7 @@
 const services = require('../services');
 
 const buildCreateUserController = require('./users/createUser.controller');
-const buildHashPasswordController = require('./utilities/hashPassword.controller');
+const buildHashDataController = require('./utilities/hashData.controller');
 const buildUserLoginController = require('./users/userLogin.controller');
 const buildResendOTPController = require('./users/resendOTP.controller');
 
@@ -11,4 +11,4 @@ module.exports.userLogin = buildUserLoginController(services.userLogin);
 module.exports.resendOTP = buildResendOTPController(services.verifyEmail);
 
 //utilities controllers
-module.exports.hashPassword = buildHashPasswordController(services.hashPassword);
+module.exports.hashData = buildHashDataController(services.hashData);
