@@ -7,9 +7,11 @@ module.exports = function buildUserLogoutController(logoutService) {
 
         const headers = { 'Content-Type': 'application/json' };
         const refreshToken = httpRequest.cookies?.refreshToken;
+        const authHeader = httpRequest.headers?.Authorization;
+        const accessToken = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
         try {
-            await logoutService.logoutUser(refreshToken);
+            await logoutService.logoutUser(refreshToken, accessToken);
             logger.info(logVar + 'User logged out successfully');
             return {
                 headers,

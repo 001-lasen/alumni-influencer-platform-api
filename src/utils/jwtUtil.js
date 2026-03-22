@@ -22,4 +22,8 @@ module.exports = {
     verifyRefreshToken(token) {
         return jwt.verify(token, JWT_REFRESH_SECRET);
     },
+
+    decodeToken(token) {
+        return jwt.decode(token);
+    },
 };
