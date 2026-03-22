@@ -10,8 +10,7 @@ const UserDetails = sequelize.define('UserDetails', {
     uuid: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
-        unique: true,
+        allowNull: false
     },
     userId: {
         type: DataTypes.INTEGER,
@@ -27,8 +26,7 @@ const UserDetails = sequelize.define('UserDetails', {
     },
     userName: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: false
     },
     contactNumber: {
         type: DataTypes.STRING,
@@ -36,8 +34,7 @@ const UserDetails = sequelize.define('UserDetails', {
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: false
     },
     linkedInProfile: {
         type: DataTypes.STRING,
@@ -57,7 +54,12 @@ const UserDetails = sequelize.define('UserDetails', {
     }
 }, {
     tableName: 'user_details',
-    timestamps: true
+    timestamps: true,
+    indexes: [
+        { unique: true, fields: ['uuid'] },
+        { unique: true, fields: ['userName'] },
+        { unique: true, fields: ['email'] },
+    ]
 });
 
 module.exports = UserDetails;

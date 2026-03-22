@@ -3,11 +3,9 @@ const jwtUtil = require('../../utils/jwtUtil');
 const logger = require('../../utils/logger');
 const logVar = 'Services | userLoginService | ';
 
-module.exports = function buildUserLoginService(usersRepository, userRolesRepository) {
+module.exports = function buildUserLoginService(usersRepository, userRolesRepository, refreshTokenRepository) {
     return Object.freeze({
         loginUser,
-        checkPassword,
-        generateAccessToken
     });
 
     async function loginUser(email, password) {
@@ -21,46 +19,35 @@ module.exports = function buildUserLoginService(usersRepository, userRolesReposi
         }
 
         logger.info(logVar + 'Validating user password');
-        const isPasswordValid = await checkPassword(password, user.passwordHash);
-        console.log("Password valid: " + isPasswordValid);
+        const isPasswordValid = await encryptionUtil.compare(password, user.passwordHash);
         if (!isPasswordValid) {
             logger.warn(logVar + 'Invalid password for user');
             throw new Error('Invalid email or password');
         }
         logger.info(logVar + 'User validated successfully.');
 
-        // if (!user.isVerified) {
-        //     logger.info(logVar + 'User email not verified for email');
-        //     throw new Error('Please verify your email before logging in');
-        // }
-
-        logger.info(logVar + 'Generating access token for user');
-        const accessToken = generateAccessToken(user.id, user.email);
-
-        logger.info(logVar + 'Login successful, returning access token');
-        return {
-            statusCode: 200,
-            status: "success",
-            token: accessToken
-        };
-    }
-
-    async function checkPassword(password, hashedPassword) {
-        logger.info(logVar + 'Checking password');
-        return await encryptionUtil.compare(password, hashedPassword);
-    }
-
-    async function generateAccessToken(userId, email) {
-        logger.info(logVar + 'Retrieving user role for userId: ' + userId);
-
-        const userRoles = await userRolesRepository.getUserRoleIds(userId);
-
-        const payload = {
-            userId: userId,
-            email: email,
-            roles: userRoles
+        if (!user.isVerified) {
+            logger.info(logVar + 'User email not verified');
+            throw new Error('Please verify your email before logging in');
         }
 
-        return jwtUtil.generateToken(payload);
+        logger.info(logVar + 'Generating tokens for user');
+        const userRoles = await userRolesRepository.getUserRoleIds(user.id);
+
+        const payload = { userId: user.id, email: user.email, roles: userRoles };
+
+        const accessToken = jwtUtil.generateAccessToken(payload);
+        const refreshToken = jwtUtil.generateRefreshToken({ userId: user.id });
+
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        await refreshTokenRepository.saveRefreshToken(user.id, refreshToken, expiresAt);
+
+        logger.info(logVar + 'Login successful, returning tokens');
+        return {
+            statusCode: 200,
+            status: 'success',
+            accessToken,
+            refreshToken,
+        };
     }
 }

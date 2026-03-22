@@ -42,10 +42,7 @@ module.exports = function buildUserRolesRepository(models) {
 
         try {
             const userRoleMappings = await models.userRoleUserMapping.findAll({
-                where: { userId: userId },
-                include: [{
-                    roleId: 'roleId',
-                }]
+                where: { userId: userId }
             });
 
             const roleIds = userRoleMappings.map((m) => m.roleId);
