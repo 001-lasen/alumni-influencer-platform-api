@@ -3,8 +3,9 @@ const logVar = 'Services | createUserService | ';
 const enums = require('../../utils/enums');
 const {generateOTP, getOTPExpiry} = require("../../utils/otp");
 const encryptionUtil = require('../../utils/encryption');
+const {sendOtpEmail} = require('../../utils/emailUtil');
 
-module.exports = function buildCreateUserService(verifyEmail, usersRepository, userRolesRepository) {
+module.exports = function buildCreateUserService(usersRepository, userRolesRepository) {
     return Object.freeze({
         createUser,
         validateEmail,
@@ -33,7 +34,7 @@ module.exports = function buildCreateUserService(verifyEmail, usersRepository, u
             const otpExpiry = getOTPExpiry();
 
             logger.info(logVar + 'Sending OTP to user email: ' + email);
-            await verifyEmail.sendOtpEmail(email, otp);
+            await sendOtpEmail(email, otp);
 
             logger.info(logVar + 'Storing OTP hash and expiry in database for userId: ' + result.id);
             await usersRepository.saveOTP(result.id, hashedOTP, otpExpiry);

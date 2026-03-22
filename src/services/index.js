@@ -11,7 +11,7 @@ const buildForgotPasswordService = require('./users/forgotPassword.service');
 
 // user services
 const verifyEmail = buildVerifyEmailService(repositories.usersRepository);
-const createUser = buildCreateUserService(verifyEmail, repositories.usersRepository, repositories.userRolesRepository);
+const createUser = buildCreateUserService(repositories.usersRepository, repositories.userRolesRepository);
 const userLogin = buildUserLoginService(repositories.usersRepository, repositories.userRolesRepository, repositories.refreshTokenRepository);
 const refreshService = buildRefreshService(repositories.refreshTokenRepository, repositories.userRolesRepository);
 const userLogout = buildUserLogoutService(repositories.refreshTokenRepository, repositories.tokenBlacklistRepository);
