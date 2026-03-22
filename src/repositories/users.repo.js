@@ -7,7 +7,9 @@ module.exports = function buildUsersRepository(models) {
         findUserByEmail,
         saveOTP,
         markEmailVerified,
-        incrementOTPAttempts
+        incrementOTPAttempts,
+        findUserById,
+        updatePassword
     });
 
     async function createUser(email, password, userType) {
@@ -112,5 +114,18 @@ module.exports = function buildUsersRepository(models) {
             logger.error(`${logVar}Error incrementing OTP attempts: ${error.message}`);
             throw error;
         }
+    }
+
+    async function findUserById(userId) {
+        logger.info(logVar + 'Finding user by id: ' + userId);
+        return await models.users.findOne({ where: { id: userId } });
+    }
+
+    async function updatePassword(userId, hashedPassword) {
+        logger.info(logVar + 'Updating password for userId: ' + userId);
+        return await models.users.update(
+            { passwordHash: hashedPassword },
+            { where: { id: userId } }
+        );
     }
 }

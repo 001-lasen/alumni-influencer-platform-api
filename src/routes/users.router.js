@@ -8,7 +8,8 @@ const {
     resendOTP,
     verifyUserEmail,
     refreshToken,
-    userLogout
+    userLogout,
+    changePassword
 } = require('../controllers');
 
 router.post('/create-user', callback(createUser));
@@ -17,5 +18,6 @@ router.get('/resend-otp', callback(resendOTP));
 router.post('/verify-email', callback(verifyUserEmail));
 router.post('/refresh', callback(refreshToken));
 router.post('/logout', authMiddleware, callback(userLogout));
+router.post('/change-password', authMiddleware, callback(changePassword));
 
 module.exports = router;

@@ -10,6 +10,7 @@ module.exports = function makeExpressCallback(controller) {
                 file: req.file || req.files || null,
                 path: req.path,
                 cookies: req.cookies,
+                user: req.user,
                 headers: {
                     'Content-Type': req.get('Content-Type'),
                     Referer: req.get('Referer'),
