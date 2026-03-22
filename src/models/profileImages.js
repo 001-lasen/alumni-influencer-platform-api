@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const profileImages = sequelize.define('profileImages', {
+const ProfileImages = sequelize.define('ProfileImages', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -42,4 +42,4 @@ const profileImages = sequelize.define('profileImages', {
     timestamps: true
 });
 
-module.exports = profileImages;
+module.exports = ProfileImages;

@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const userRoles = sequelize.define('userRoles', {
+const UserDetails = sequelize.define('UserDetails', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -10,8 +10,7 @@ const userRoles = sequelize.define('userRoles', {
     uuid: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
-        unique: true,
+        allowNull: false
     },
     userId: {
         type: DataTypes.INTEGER,
@@ -27,8 +26,7 @@ const userRoles = sequelize.define('userRoles', {
     },
     userName: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: false
     },
     contactNumber: {
         type: DataTypes.STRING,
@@ -36,8 +34,7 @@ const userRoles = sequelize.define('userRoles', {
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: false
     },
     linkedInProfile: {
         type: DataTypes.STRING,
@@ -57,7 +54,12 @@ const userRoles = sequelize.define('userRoles', {
     }
 }, {
     tableName: 'user_details',
-    timestamps: true
+    timestamps: true,
+    indexes: [
+        { unique: true, fields: ['uuid'] },
+        { unique: true, fields: ['userName'] },
+        { unique: true, fields: ['email'] },
+    ]
 });
 
-module.exports = userRoles;
+module.exports = UserDetails;

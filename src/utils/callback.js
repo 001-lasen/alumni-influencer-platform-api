@@ -9,6 +9,8 @@ module.exports = function makeExpressCallback(controller) {
                 method: req.method,
                 file: req.file || req.files || null,
                 path: req.path,
+                cookies: req.cookies,
+                user: req.user,
                 headers: {
                     'Content-Type': req.get('Content-Type'),
                     Referer: req.get('Referer'),
@@ -33,6 +35,16 @@ module.exports = function makeExpressCallback(controller) {
 
             if (httpResponse.type === 'html') {
                 return res.status(httpResponse.statusCode).render(httpResponse.viewName, httpResponse.body);
+            }
+
+            if (httpResponse.cookies) {
+                Object.entries(httpResponse.cookies).forEach(([name, { value, options }]) => {
+                    res.cookie(name, value, options);
+                });
+            }
+
+            if (httpResponse.clearCookies) {
+                httpResponse.clearCookies.forEach(name => res.clearCookie(name));
             }
 
             return res

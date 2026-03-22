@@ -2,12 +2,12 @@ const encryptionUtil = require('../../utils/encryption');
 const logger = require('../../utils/logger');
 const logVar = 'Services | hashPasswordService | ';
 
-module.exports = function buildHashPasswordService() {
+module.exports = function buildHashDataService() {
     return Object.freeze({
-        hashPassword
+        hashData
     });
 
-    async function hashPassword(password) {
+    async function hashData(password) {
         logger.info(logVar + 'In hashPassword service');
         return encryptionUtil.hash(password);
     }

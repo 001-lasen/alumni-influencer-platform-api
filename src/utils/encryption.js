@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_ROUNDS);
 
-const passwordUtil = {
+const encryptionUtil = {
     hash: async (plainTextPassword) => {
         return bcrypt.hash(plainTextPassword, SALT_ROUNDS);
     },
@@ -11,4 +11,4 @@ const passwordUtil = {
     }
 };
 
-module.exports = passwordUtil;
+module.exports = encryptionUtil;
