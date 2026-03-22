@@ -2,7 +2,7 @@ const logger = require('../../utils/logger');
 const logVar = 'Services | verifyEmailService | ';
 const encryptionUtil = require('../../utils/encryption');
 const constants = require('../../utils/constants');
-const otpEmailTemplate = require('../../utils/templates/otpEmail.template');
+const verifyEmailOTPTemplate = require('../../utils/templates/verifyEmailOTP.template');
 const transporter = require('../../utils/emailTransporter');
 const {generateOTP, getOTPExpiry} = require("../../utils/otp");
 
@@ -52,7 +52,7 @@ module.exports = function buildVerifyEmailService(usersRepository) {
             from: `"Eastminster Alumni" <${constants.EMAIL_USER}>`,
             to: email,
             subject: 'OTP - Email Verification',
-            html: otpEmailTemplate(otp)
+            html: verifyEmailOTPTemplate(otp)
         }
 
         try {
