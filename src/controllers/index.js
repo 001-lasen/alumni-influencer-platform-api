@@ -8,6 +8,9 @@ const buildVerifyUserEmailController = require('./users/verifyUserEmail.controll
 const buildRefreshController = require('./users/refresh.controller');
 const buildUserLogoutController = require('./users/userLogout.controller');
 const buildChangePasswordController = require('./users/changePassword.controller');
+const buildForgotPasswordController = require('./users/forgotPassword.controller');
+const buildVerifyForgotPasswordOTPController = require('./users/verifyForgotPasswordOTP.controller');
+const buildResetPasswordController = require('./users/resetPassword.controller');
 
 //user controllers
 module.exports.createUser = buildCreateUserController(services.createUser);
@@ -17,6 +20,9 @@ module.exports.verifyUserEmail = buildVerifyUserEmailController(services.verifyE
 module.exports.refreshToken = buildRefreshController(services.refreshService);
 module.exports.userLogout = buildUserLogoutController(services.userLogout);
 module.exports.changePassword = buildChangePasswordController(services.changePassword);
+module.exports.forgotPassword = buildForgotPasswordController(services.forgotPassword);
+module.exports.verifyForgotPasswordOTP = buildVerifyForgotPasswordOTPController(services.forgotPassword);
+module.exports.resetPassword = buildResetPasswordController(services.forgotPassword);
 
 //utilities controllers
 module.exports.hashData = buildHashDataController(services.hashData);

@@ -3,7 +3,9 @@ const logger = require('../../utils/logger');
 const logVar = 'Services | changePasswordService | ';
 
 module.exports = function buildChangePasswordService(usersRepository, refreshTokenRepository) {
-    return Object.freeze({ changePassword });
+    return Object.freeze({
+        changePassword
+    });
 
     async function changePassword(userId, currentPassword, newPassword) {
         logger.info(logVar + 'In changePassword service');
@@ -31,6 +33,6 @@ module.exports = function buildChangePasswordService(usersRepository, refreshTok
         await refreshTokenRepository.revokeAllUserTokens(userId);
 
         logger.info(logVar + 'Password changed successfully for userId: ' + userId);
-        return { statusCode: 200, message: 'Password changed successfully' };
+        return {statusCode: 200, message: 'Password changed successfully'};
     }
 }
