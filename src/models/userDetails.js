@@ -47,14 +47,6 @@ const UserDetails = sequelize.define('UserDetails', {
     biography: {
         type: DataTypes.TEXT,
         allowNull: true,
-    },
-    createdBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    updatedBy: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
     }
 }, {
     tableName: 'user_details',
