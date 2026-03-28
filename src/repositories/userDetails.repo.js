@@ -15,7 +15,10 @@ module.exports = function buildUserDetailsRepository(models) {
         deleteAllCertifications,
         deleteAllLicences,
         deleteAllCourses,
-        findAllQualifications
+        findAllQualifications,
+        createUserEmployment,
+        updateUserEmployment,
+        findAllUserEmployment
     })
 
     async function createUserDetails(data) {
@@ -102,5 +105,34 @@ module.exports = function buildUserDetailsRepository(models) {
         ]);
 
         return {degrees, certifications, licences, courses};
+    }
+
+    async function createUserEmployment(userId, employment) {
+        logger.info(logVar + 'Creating employment history for userId: ' + userId);
+        const data = employment.map(e => ({
+            ...e,
+            userId,
+            endDate: e.isCurrent ? null : e.endDate,
+            createdBy: userId,
+            updatedBy: userId
+        }));
+        return await models.employmentHistory.bulkCreate(data);
+    }
+
+    async function updateUserEmployment(uuid, userId, data) {
+        logger.info(logVar + 'Updating employment for uuid: ' + uuid);
+        return await models.employmentHistory.update(
+            {
+                ...data,
+                endDate: data.isCurrent ? null : data.endDate,
+                updatedBy: userId
+            },
+            {where: {uuid, userId}}
+        );
+    }
+
+    async function findAllUserEmployment(userId) {
+        logger.info(logVar + 'Finding all employment history for userId: ' + userId);
+        return await models.employmentHistory.findAll({where: {userId}});
     }
 }

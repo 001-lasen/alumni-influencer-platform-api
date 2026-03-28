@@ -8,7 +8,10 @@ const {
     getPersonalInfo,
     createQualifications,
     updateQualifications,
-    getQualifications
+    getQualifications,
+    createEmployment,
+    updateEmployment,
+    getEmployment
 } = require('../controllers');
 
 //personal info routes
@@ -20,5 +23,10 @@ router.get('/personal', authMiddleware, callback(getPersonalInfo));
 router.post('/qualifications', authMiddleware, callback(createQualifications));
 router.put('/qualifications', authMiddleware, callback(updateQualifications));
 router.get('/qualifications', authMiddleware, callback(getQualifications));
+
+//employment history routes
+router.post('/employment', authMiddleware, callback(createEmployment));
+router.put('/employment', authMiddleware, callback(updateEmployment));
+router.get('/employment', authMiddleware, callback(getEmployment));
 
 module.exports = router;

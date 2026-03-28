@@ -13,9 +13,11 @@ const buildVerifyForgotPasswordOTPController = require('./users/verifyForgotPass
 const buildResetPasswordController = require('./users/resetPassword.controller');
 const buildPersonalInfoController = require('./profile/personalInfomation.controller');
 const buildUserQualificationsController = require('./profile/userQualifications.controller');
+const buildUserEmploymentController = require('./profile/userEmployment.controller');
 
 const personalInfoController = buildPersonalInfoController(services.personalInfo);
 const userQualificationsController = buildUserQualificationsController(services.qualifications);
+const userEmploymentController = buildUserEmploymentController(services.employmentService);
 
 //user controllers
 module.exports.createUser = buildCreateUserController(services.createUser);
@@ -36,6 +38,9 @@ module.exports.getPersonalInfo = personalInfoController.getPersonalInfo;
 module.exports.createQualifications = userQualificationsController.createQualifications;
 module.exports.updateQualifications = userQualificationsController.updateQualifications;
 module.exports.getQualifications = userQualificationsController.getQualifications;
+module.exports.createEmployment = userEmploymentController.createEmployment;
+module.exports.updateEmployment = userEmploymentController.updateEmployment;
+module.exports.getEmployment = userEmploymentController.getEmployment;
 
 //utilities controllers
 module.exports.hashData = buildHashDataController(services.hashData);
