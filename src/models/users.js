@@ -10,13 +10,11 @@ const Users = sequelize.define('Users', {
     uuid: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
-        unique: true,
+        allowNull: false
     },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
         validate: {
             isEmail: true,
         },
@@ -51,7 +49,11 @@ const Users = sequelize.define('Users', {
     },
 }, {
     tableName: 'users',
-    timestamps: true
+    timestamps: true,
+    indexes: [
+        { unique: true, fields: ['uuid']},
+        { unique: true, fields: ['email'] },
+    ]
 });
 
 module.exports = Users;

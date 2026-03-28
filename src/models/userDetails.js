@@ -44,12 +44,8 @@ const UserDetails = sequelize.define('UserDetails', {
         type: DataTypes.INTEGER,
         allowNull: true,
     },
-    createdBy: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    updatedBy: {
-        type: DataTypes.INTEGER,
+    biography: {
+        type: DataTypes.TEXT,
         allowNull: true,
     }
 }, {
