@@ -36,7 +36,43 @@ module.exports = function buildUserDetailsRepository(models) {
 
     async function findUserDetailsByUserId(userId) {
         logger.info(logVar + 'Finding user details for userId: ' + userId);
-        return await models.userDetails.findOne({where: {userId}});
+        return await models.userDetails.findOne({
+            where: { userId },
+            attributes: { exclude: ['profileImageId'] },
+            include: [
+                {
+                    model: models.profileImages,
+                    as: 'profileImages',
+                    where: { isDeleted: false },
+                    required: false,
+                },
+                {
+                    model: models.degrees,
+                    as: 'degrees',
+                    required: false,
+                },
+                {
+                    model: models.certifications,
+                    as: 'certifications',
+                    required: false,
+                },
+                {
+                    model: models.licences,
+                    as: 'licences',
+                    required: false,
+                },
+                {
+                    model: models.professionalCourses,
+                    as: 'professionalCourses',
+                    required: false,
+                },
+                {
+                    model: models.employmentHistory,
+                    as: 'employmentHistory',
+                    required: false,
+                },
+            ]
+        });
     }
 
     async function findAllUserDetails() {
@@ -147,15 +183,15 @@ module.exports = function buildUserDetailsRepository(models) {
     async function softDeleteProfileImage(userId) {
         logger.info(logVar + 'Soft deleting profile image for userId: ' + userId);
         return await models.profileImages.update(
-            { isDeleted: true, updatedBy: userId },
-            { where: { userId, isDeleted: false } }
+            {isDeleted: true, updatedBy: userId},
+            {where: {userId, isDeleted: false}}
         );
     }
 
     async function findActiveProfileImage(userId) {
         logger.info(logVar + 'Finding active profile image for userId: ' + userId);
         return await models.profileImages.findOne({
-            where: { userId, isDeleted: false }
+            where: {userId, isDeleted: false}
         });
     }
 }
