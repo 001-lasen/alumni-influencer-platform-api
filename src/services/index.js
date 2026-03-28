@@ -9,6 +9,7 @@ const buildUserLogoutService = require('./users/userLogout.service');
 const buildChangePasswordService = require('./users/changePassword.service');
 const buildForgotPasswordService = require('./users/forgotPassword.service');
 const buildPersonalInfoService = require('./profile/personalInformation.service');
+const buildUserQualificationsService = require('./profile/userQualifications.service');
 
 // user services
 const verifyEmail = buildVerifyEmailService(repositories.usersRepository);
@@ -24,6 +25,7 @@ const hashData = buildHashDataService();
 
 // profile services
 const personalInfo = buildPersonalInfoService(repositories.userDetailsRepository);
+const qualifications = buildUserQualificationsService(repositories.userDetailsRepository);
 
 module.exports = {
     createUser,
@@ -34,5 +36,6 @@ module.exports = {
     userLogout,
     changePassword,
     forgotPassword,
-    personalInfo
+    personalInfo,
+    qualifications
 };
