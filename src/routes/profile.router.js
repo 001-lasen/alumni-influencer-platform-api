@@ -20,7 +20,7 @@ const {upload} = require('../config/cloudinary');
 //personal info routes
 router.post('/personal', authMiddleware, callback(createPersonalInfo));
 router.put('/personal', authMiddleware, callback(updatePersonalInfo));
-router.get('/personal', authMiddleware, callback(getPersonalInfo));
+router.get('/user-details', authMiddleware, callback(getPersonalInfo));
 
 //qualifications routes
 router.post('/qualifications', authMiddleware, callback(createQualifications));
