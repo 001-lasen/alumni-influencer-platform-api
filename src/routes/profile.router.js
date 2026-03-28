@@ -11,8 +11,11 @@ const {
     getQualifications,
     createEmployment,
     updateEmployment,
-    getEmployment
+    getEmployment,
+    uploadProfileImage,
+    getProfileImage
 } = require('../controllers');
+const {upload} = require('../config/cloudinary');
 
 //personal info routes
 router.post('/personal', authMiddleware, callback(createPersonalInfo));
@@ -28,5 +31,7 @@ router.get('/qualifications', authMiddleware, callback(getQualifications));
 router.post('/employment', authMiddleware, callback(createEmployment));
 router.put('/employment', authMiddleware, callback(updateEmployment));
 router.get('/employment', authMiddleware, callback(getEmployment));
+router.post('/image', authMiddleware, upload.single('image'), callback(uploadProfileImage));
+router.get('/image', authMiddleware, callback(getProfileImage));
 
 module.exports = router;

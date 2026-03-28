@@ -18,7 +18,10 @@ module.exports = function buildUserDetailsRepository(models) {
         findAllQualifications,
         createUserEmployment,
         updateUserEmployment,
-        findAllUserEmployment
+        findAllUserEmployment,
+        createProfileImage,
+        softDeleteProfileImage,
+        findActiveProfileImage
     })
 
     async function createUserDetails(data) {
@@ -134,5 +137,25 @@ module.exports = function buildUserDetailsRepository(models) {
     async function findAllUserEmployment(userId) {
         logger.info(logVar + 'Finding all employment history for userId: ' + userId);
         return await models.employmentHistory.findAll({where: {userId}});
+    }
+
+    async function createProfileImage(data) {
+        logger.info(logVar + 'Creating profile image for userId: ' + data.userId);
+        return await models.profileImages.create(data);
+    }
+
+    async function softDeleteProfileImage(userId) {
+        logger.info(logVar + 'Soft deleting profile image for userId: ' + userId);
+        return await models.profileImages.update(
+            { isDeleted: true, updatedBy: userId },
+            { where: { userId, isDeleted: false } }
+        );
+    }
+
+    async function findActiveProfileImage(userId) {
+        logger.info(logVar + 'Finding active profile image for userId: ' + userId);
+        return await models.profileImages.findOne({
+            where: { userId, isDeleted: false }
+        });
     }
 }
