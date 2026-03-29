@@ -32,7 +32,7 @@ module.exports = function buildUserLoginService(usersRepository, userRolesReposi
         }
 
         logger.info(logVar + 'Generating tokens for user');
-        const userRoles = await userRolesRepository.getUserRoleIds(user.id);
+        const userRoles = await userRolesRepository.getUserRoles(user.id);
 
         const payload = { userId: user.id, email: user.email, roles: userRoles };
 

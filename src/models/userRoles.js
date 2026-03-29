@@ -22,10 +22,6 @@ const UserRoles = sequelize.define('UserRoles', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    roleType: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     createdBy: {
         type: DataTypes.STRING,
         allowNull: true,
