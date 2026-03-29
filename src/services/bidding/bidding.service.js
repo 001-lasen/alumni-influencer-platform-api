@@ -125,12 +125,15 @@ module.exports = function buildBiddingService(biddingRepository) {
         const existingBid = await biddingRepository.findActiveBidByUserId(userId, slotDate);
         const biddingOpen = isBiddingOpen();
 
+        const winnerAlreadySelected = await biddingRepository.getAlumniOfTheDay(slotDate);
+
         return {
             statusCode: 200,
             data: {
                 slotDate,
-                biddingOpen,
+                biddingOpen: biddingOpen && !winnerAlreadySelected,
                 biddingClosesAt: '18:00',
+                winnerSelected: !!winnerAlreadySelected,
                 hasBid: !!existingBid,
                 currentBidAmount: existingBid ? existingBid.bidAmount : null,
             }
