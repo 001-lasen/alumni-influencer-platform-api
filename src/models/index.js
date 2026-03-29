@@ -12,6 +12,9 @@ const certifications = require('./certifications');
 const licences = require('./licences');
 const professionalCourses = require('./professionalCourses');
 const employmentHistory = require('./employmentHistory');
+const bids = require('./bids');
+const alumniOfTheDay = require('./alumniOfTheDay');
+const alumniEvents = require('./alumniEvents');
 
 const db = {
     sequelize,
@@ -26,7 +29,10 @@ const db = {
     certifications,
     licences,
     professionalCourses,
-    employmentHistory
+    employmentHistory,
+    bids,
+    alumniOfTheDay,
+    alumniEvents
 };
 
 db.users.hasOne(db.userDetails, { foreignKey: 'userId', as : 'details' });
@@ -55,5 +61,17 @@ db.professionalCourses.belongsTo(db.userDetails, { foreignKey: 'userId' });
 
 db.userDetails.hasMany(db.employmentHistory, { foreignKey: 'userId', as: 'employmentHistory' });
 db.employmentHistory.belongsTo(db.userDetails, { foreignKey: 'userId' });
+
+db.users.hasMany(db.bids, { foreignKey: 'userId', as: 'bids' });
+db.bids.belongsTo(db.users, { foreignKey: 'userId' });
+
+db.users.hasMany(db.alumniOfTheDay, { foreignKey: 'userId', as: 'alumniOfTheDay' });
+db.alumniOfTheDay.belongsTo(db.users, { foreignKey: 'userId' });
+
+db.bids.hasOne(db.alumniOfTheDay, { foreignKey: 'bidId', as: 'alumniOfTheDay' });
+db.alumniOfTheDay.belongsTo(db.bids, { foreignKey: 'bidId' });
+
+db.users.hasMany(db.alumniEvents, { foreignKey: 'userId', as: 'alumniEvents' });
+db.alumniEvents.belongsTo(db.users, { foreignKey: 'userId' });
 
 module.exports = db;
