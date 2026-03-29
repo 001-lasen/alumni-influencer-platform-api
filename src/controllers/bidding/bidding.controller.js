@@ -98,9 +98,14 @@ module.exports = function buildBiddingController(biddingService) {
     async function getAlumniOfTheDay(httpRequest) {
         logger.info(logVar + 'In getAlumniOfTheDay controller');
         const headers = {'Content-Type': 'application/json'};
+        const {date} = httpRequest.params;
+
+        if (!date) {
+            return {headers, statusCode: 400, body: {message: 'Date is required'}};
+        }
 
         try {
-            const data = await biddingService.getAlumniOfTheDay();
+            const data = await biddingService.getAlumniOfTheDay(date);
             return {headers, statusCode: 200, body: {data: data.data, message: data.message}};
         } catch (error) {
             logger.error(logVar + 'Error getting alumni of the day: ' + error.message);

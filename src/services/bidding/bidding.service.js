@@ -137,17 +137,16 @@ module.exports = function buildBiddingService(biddingRepository) {
         };
     }
 
-    async function getAlumniOfTheDay() {
-        logger.info(logVar + 'In getAlumniOfTheDay service');
+    async function getAlumniOfTheDay(date) {
+        logger.info(logVar + 'In getAlumniOfTheDay service for date: ' + date);
 
-        const today = new Date().toISOString().split('T')[0];
-        const alumni = await biddingRepository.getAlumniOfTheDay(today);
+        const alumni = await biddingRepository.getAlumniOfTheDay(date);
 
         if (!alumni) {
             return {
                 statusCode: 200,
                 data: null,
-                message: 'No Alumni of the Day for today'
+                message: 'No Alumni of the Day for ' + date
             };
         }
 
