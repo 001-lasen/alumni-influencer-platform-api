@@ -18,14 +18,14 @@ const {
 const {upload} = require('../config/cloudinary');
 
 //personal info routes
-router.post('/personal', authMiddleware, callback(createPersonalInfo));
-router.put('/personal', authMiddleware, callback(updatePersonalInfo));
-router.get('/user-details', authMiddleware, callback(getPersonalInfo));
+router.post('/personal', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(createPersonalInfo));
+router.put('/personal', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(updatePersonalInfo));
+router.get('/user-details', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getPersonalInfo));
 
 //qualifications routes
-router.post('/qualifications', authMiddleware, callback(createQualifications));
-router.put('/qualifications', authMiddleware, callback(updateQualifications));
-router.get('/qualifications', authMiddleware, callback(getQualifications));
+router.post('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(createQualifications));
+router.put('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(updateQualifications));
+router.get('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getQualifications));
 
 //employment history routes
 router.post('/employment', authMiddleware, callback(createEmployment));

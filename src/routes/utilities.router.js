@@ -4,8 +4,9 @@ const callback = require('../utils/callback');
 const {hashData} = require('../controllers');
 const buildWinnerSelectionJob = require('../jobs/winnerSelection.job');
 const repositories = require('../repositories');
+const authMiddleware = require('../middleware/authMiddleware');
 
-router.post('/hashing', callback(hashData));
+router.post('/hashing', authMiddleware(['ADMIN', 'DEVELOPER']), callback(hashData));
 
 router.post('/trigger-winner-selection', async (req, res) => {
     const winnerSelectionJob = buildWinnerSelectionJob(repositories.biddingRepository);
