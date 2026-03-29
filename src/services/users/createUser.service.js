@@ -4,6 +4,7 @@ const enums = require('../../utils/enums');
 const {generateOTP, getOTPExpiry} = require("../../utils/otp");
 const encryptionUtil = require('../../utils/encryption');
 const {sendOtpEmail} = require('../../utils/emailUtil');
+const constants = require('../../utils/constants');
 
 module.exports = function buildCreateUserService(usersRepository, userRolesRepository) {
     return Object.freeze({
@@ -54,10 +55,17 @@ module.exports = function buildCreateUserService(usersRepository, userRolesRepos
         logger.info(logVar + 'Validating email format');
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const allowedDomains = constants.ALLOWED_EMAIL_DOMAIN;
+
         if (!emailRegex.test(email)) {
             logger.warn(logVar + 'Invalid email format: ' + email);
             throw new Error('Invalid email format');
         }
+
+        if (!allowedDomains.some(domain => email.endsWith('@' + domain))) {
+            throw new Error('Email must be a valid university address');
+        }
+
         logger.info(logVar + 'Email format is valid');
     }
 

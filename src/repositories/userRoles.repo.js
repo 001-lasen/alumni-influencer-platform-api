@@ -4,7 +4,8 @@ const logVar = 'Repositories | userRoles.repo | ';
 module.exports = function buildUserRolesRepository(models) {
     return Object.freeze({
         assignRoleToUser,
-        getUserRoleIds
+        getUserRoleIds,
+        getUserRoles
     });
 
     async function assignRoleToUser(userId, userType) {
@@ -12,7 +13,7 @@ module.exports = function buildUserRolesRepository(models) {
 
         try {
             const userRoles = await models.userRoles.findAll({
-                where: { roleType: userType }
+                where: {roleName: userType}
             });
 
             if (!userRoles || userRoles.length === 0) {
@@ -42,12 +43,35 @@ module.exports = function buildUserRolesRepository(models) {
 
         try {
             const userRoleMappings = await models.userRoleUserMapping.findAll({
-                where: { userId: userId }
+                where: {userId: userId}
             });
 
             const roleIds = userRoleMappings.map((m) => m.roleId);
             logger.info(logVar + `Retrieved ${roleIds.length} role mappings for user ID: ${userId}`);
             return roleIds;
+        } catch (error) {
+            logger.error(logVar + 'Error retrieving user roles: ' + error.message);
+            throw error;
+        }
+    }
+
+    async function getUserRoles(userId) {
+        logger.info(logVar + 'In getUserRoleNames repository');
+
+        try {
+            const user = await models.users.findOne({
+                where: { id: userId },
+                include: [{
+                    model: models.userRoles,
+                    as: 'roles',
+                    attributes: ['roleName'],
+                    through: { attributes: [] }
+                }]
+            });
+
+            const roleNames = user.roles.map(r => r.roleName);
+            logger.info(logVar + `Retrieved ${roleNames.length} roles for userId: ${userId}`);
+            return roleNames;
         } catch (error) {
             logger.error(logVar + 'Error retrieving user roles: ' + error.message);
             throw error;

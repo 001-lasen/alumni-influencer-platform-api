@@ -12,6 +12,7 @@ const buildPersonalInfoService = require('./profile/personalInformation.service'
 const buildUserQualificationsService = require('./profile/userQualifications.service');
 const buildUserEmploymentService = require('./profile/userEmployment.service');
 const buildProfileImageService = require('./profile/profileImage.service');
+const buildBiddingService = require('./bidding/bidding.service');
 
 // user services
 const verifyEmail = buildVerifyEmailService(repositories.usersRepository);
@@ -31,6 +32,9 @@ const qualifications = buildUserQualificationsService(repositories.userDetailsRe
 const employmentService = buildUserEmploymentService(repositories.userDetailsRepository);
 const profileImageService = buildProfileImageService(repositories.userDetailsRepository);
 
+//bidding services
+const biddingService = buildBiddingService(repositories.biddingRepository);
+
 module.exports = {
     createUser,
     verifyEmail,
@@ -43,5 +47,6 @@ module.exports = {
     personalInfo,
     qualifications,
     employmentService,
-    profileImageService
+    profileImageService,
+    biddingService,
 };

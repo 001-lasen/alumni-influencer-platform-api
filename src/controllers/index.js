@@ -15,11 +15,16 @@ const buildPersonalInfoController = require('./profile/personalInfomation.contro
 const buildUserQualificationsController = require('./profile/userQualifications.controller');
 const buildUserEmploymentController = require('./profile/userEmployment.controller');
 const buildProfileImageController = require('./profile/profileImage.controller');
+const buildBiddingController = require('./bidding/bidding.controller');
 
+//profile controllers
 const personalInfoController = buildPersonalInfoController(services.personalInfo);
 const userQualificationsController = buildUserQualificationsController(services.qualifications);
 const userEmploymentController = buildUserEmploymentController(services.employmentService);
 const profileImageController = buildProfileImageController(services.profileImageService);
+
+//bidding controller
+const biddingController = buildBiddingController(services.biddingService);
 
 //user controllers
 module.exports.createUser = buildCreateUserController(services.createUser);
@@ -48,3 +53,11 @@ module.exports.getProfileImage = profileImageController.getProfileImage;
 
 //utilities controllers
 module.exports.hashData = buildHashDataController(services.hashData);
+
+//bidding controllers
+module.exports.placeBid = biddingController.placeBid;
+module.exports.getBidStatus = biddingController.getBidStatus;
+module.exports.getBiddingHistory = biddingController.getBidHistory;
+module.exports.getMonthlyLimitStatus = biddingController.getMonthlyLimitStatus;
+module.exports.getTomorrowSlot = biddingController.getTomorrowSlot;
+module.exports.getAlumniOfTheDay = biddingController.getAlumniOfTheDay;

@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-const UserRoles = sequelize.define('UserRoles', {
+const AlumniEvents = sequelize.define('AlumniEvents', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -11,28 +11,31 @@ const UserRoles = sequelize.define('UserRoles', {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         allowNull: false,
-        unique: true,
     },
-    roleName: {
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    eventName: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
     },
-    description: {
-        type: DataTypes.STRING,
-        allowNull: true,
+    eventDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
     },
     createdBy: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: DataTypes.INTEGER,
+        allowNull: false,
     },
     updatedBy: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: true,
     }
-},{
-    tableName: 'user_roles',
-    timestamps: true
+}, {
+    tableName: 'alumni_events',
+    timestamps: true,
+    indexes: [{unique: true, fields: ['uuid']}]
 });
 
-module.exports = UserRoles;
+module.exports = AlumniEvents;
