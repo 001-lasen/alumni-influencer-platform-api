@@ -10,6 +10,8 @@ if (!process.env.DB_HOST) {
 const http = require('http');
 const app = require('./app');
 const db = require('./src/models');
+const startAllJobs = require('./src/jobs');
+const repositories = require('./src/repositories');
 
 const port = process.env.PORT || 3000;
 app.set('port', port);
@@ -28,6 +30,7 @@ const server = http.createServer(app);
 
         server.listen(port, () => {
             console.log(`Server running on http://localhost:${port}`);
+            startAllJobs(repositories);
         });
     } catch (err) {
         console.error('Failed to start server:', err);

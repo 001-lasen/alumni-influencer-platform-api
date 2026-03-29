@@ -2,6 +2,7 @@ const transporter = require('./emailTransporter');
 const constants = require('./constants');
 const verifyEmailOTPTemplate = require('./templates/verifyEmailOTPEmail.template');
 const forgotPasswordEmailTemplate = require('./templates/forgotPasswordEmail.template');
+const winnerNotificationEmailTemplate = require('./templates/winnerNotificationEmail.template');
 const logger = require('./logger');
 const logVar = 'Utils | emailUtil | ';
 
@@ -39,4 +40,21 @@ async function sendForgotPasswordOtpEmail(email, otp) {
     }
 }
 
-module.exports = {sendOtpEmail, sendForgotPasswordOtpEmail};
+async function sendWinnerNotificationEmail(email, firstName, slotDate) {
+    logger.info(logVar + 'Sending winner notification to: ' + email);
+    const mailOptions = {
+        from: `"Eastminster Alumni" <${constants.EMAIL_USER}>`,
+        to: email,
+        subject: 'Congratulations! You are Alumni of the Day!',
+        html: winnerNotificationEmailTemplate(firstName, slotDate)
+    };
+    try {
+        await transporter.sendMail(mailOptions);
+        logger.info(logVar + 'Winner notification sent to: ' + email);
+    } catch (error) {
+        logger.error(logVar + 'Error sending winner notification: ' + error.message);
+        throw new Error('Failed to send winner notification email');
+    }
+}
+
+module.exports = {sendOtpEmail, sendForgotPasswordOtpEmail, sendWinnerNotificationEmail};

@@ -1,6 +1,6 @@
 const logger = require('../utils/logger');
 const logVar = 'Repositories | bidding.repo | ';
-const { Op } = require('sequelize');
+const {Op} = require('sequelize');
 
 module.exports = function buildBiddingRepository(models) {
     return Object.freeze({
@@ -15,6 +15,7 @@ module.exports = function buildBiddingRepository(models) {
         getUserEventCountThisMonth,
         createAlumniOfTheDay,
         getAlumniOfTheDay,
+        getWinnerDetails
     });
 
     async function placeBid(userId, bidAmount, slotDate) {
@@ -149,6 +150,17 @@ module.exports = function buildBiddingRepository(models) {
                     ]
                 }
             ]
+        });
+    }
+
+    async function getWinnerDetails(userId) {
+        logger.info(logVar + 'Getting winner details for userId: ' + userId);
+        return await models.users.findOne({
+            where: {id: userId},
+            include: [{
+                model: models.userDetails,
+                as: 'details',
+            }]
         });
     }
 }
