@@ -2,7 +2,7 @@ const logger = require('../utils/logger');
 const logVar = 'Controller | utilitiesController | ';
 const encryptionUtil = require('../utils/encryption');
 const buildWinnerSelectionJob = require('../jobs/winnerSelection.job');
-const repositories = require('../repositories');
+const models = require('../models');
 
 async function hashData(req, res) {
     logger.info(logVar + 'In hashData');
@@ -28,7 +28,7 @@ async function triggerWinnerSelection(req, res) {
     logger.info(logVar + 'In triggerWinnerSelection');
 
     try {
-        const winnerSelectionJob = buildWinnerSelectionJob(repositories.biddingRepository);
+        const winnerSelectionJob = buildWinnerSelectionJob(models);
         await winnerSelectionJob.selectWinner();
         logger.info(logVar + 'Winner selection triggered successfully');
         return res.status(200).json({message: 'Winner selection triggered successfully'});
