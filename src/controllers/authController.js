@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const logVar = ' Controller | authController | ';
+const logVar = 'Controller | authController | ';
 const models = require('../models');
 const encryptionUtil = require('../utils/encryption');
 const jwtUtil = require('../utils/jwtUtil');

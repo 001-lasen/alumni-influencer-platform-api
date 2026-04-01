@@ -14,12 +14,19 @@ const {
     getEmployment,
     uploadProfileImage,
     getProfileImage
-} = require('../controllers');
+} = require('../controllers/profileController');
 const {upload} = require('../config/cloudinary');
 
 /**
  * @swagger
- * /profile/personal:
+ * tags:
+ *   name: Profile
+ *   description: Alumni profile management
+ */
+
+/**
+ * @swagger
+ * /api/profile/personal:
  *   post:
  *     summary: Create personal information
  *     tags: [Profile]
@@ -30,22 +37,47 @@ const {upload} = require('../config/cloudinary');
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PersonalInfo'
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - userName
+ *               - email
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: Lasen
+ *               lastName:
+ *                 type: string
+ *                 example: Vindula
+ *               userName:
+ *                 type: string
+ *                 example: lasen.vindula
+ *               email:
+ *                 type: string
+ *                 example: lasen@iit.ac.lk
+ *               contactNumber:
+ *                 type: string
+ *                 example: "+94771234567"
+ *               linkedInProfile:
+ *                 type: string
+ *                 example: https://linkedin.com/in/lasen-vindula
+ *               biography:
+ *                 type: string
+ *                 example: Passionate software engineer
  *     responses:
  *       201:
- *         description: Personal information created
+ *         description: Personal info created successfully
  *       400:
- *         description: Invalid input
+ *         description: Validation error or already exists
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.post('/personal', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(createPersonalInfo));
+router.post('/personal', authMiddleware(['ALUMNI', 'DEVELOPER']), createPersonalInfo);
 
 /**
  * @swagger
- * /profile/personal:
+ * /api/profile/personal:
  *   put:
  *     summary: Update personal information
  *     tags: [Profile]
@@ -56,22 +88,35 @@ router.post('/personal', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(creat
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PersonalInfo'
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               userName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               contactNumber:
+ *                 type: string
+ *               linkedInProfile:
+ *                 type: string
+ *               biography:
+ *                 type: string
  *     responses:
  *       200:
- *         description: Personal information updated
- *       400:
- *         description: Invalid input
+ *         description: Personal info updated successfully
+ *       404:
+ *         description: Personal info not found
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.put('/personal', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(updatePersonalInfo));
+router.put('/personal', authMiddleware(['ALUMNI', 'DEVELOPER']), updatePersonalInfo);
 
 /**
  * @swagger
- * /profile/user-details:
+ * /api/profile/personal:
  *   get:
  *     summary: Get personal information
  *     tags: [Profile]
@@ -79,19 +124,19 @@ router.put('/personal', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(update
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Personal information retrieved
+ *         description: Personal info retrieved successfully
+ *       404:
+ *         description: Personal info not found
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.get('/user-details', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getPersonalInfo));
+router.get('/user-details', authMiddleware(['ALUMNI', 'DEVELOPER', 'ADMIN']), getPersonalInfo);
 
 /**
  * @swagger
- * /profile/qualifications:
+ * /api/profile/qualifications:
  *   post:
- *     summary: Create qualifications
+ *     summary: Add qualifications
  *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
@@ -100,24 +145,79 @@ router.get('/user-details', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(ge
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Qualifications'
+ *             type: object
+ *             properties:
+ *               degrees:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     degreeName:
+ *                       type: string
+ *                       example: BSc Computer Science
+ *                     institution:
+ *                       type: string
+ *                       example: University of Westminster
+ *                     degreeUrl:
+ *                       type: string
+ *                       example: https://westminster.ac.uk/cs
+ *                     completionDate:
+ *                       type: string
+ *                       example: "2023-06-01"
+ *               certifications:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     certificationName:
+ *                       type: string
+ *                     issuingBody:
+ *                       type: string
+ *                     certificationUrl:
+ *                       type: string
+ *                     completionDate:
+ *                       type: string
+ *               licences:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     licenceName:
+ *                       type: string
+ *                     awardingBody:
+ *                       type: string
+ *                     licenceUrl:
+ *                       type: string
+ *                     completionDate:
+ *                       type: string
+ *               courses:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     courseName:
+ *                       type: string
+ *                     provider:
+ *                       type: string
+ *                     courseUrl:
+ *                       type: string
+ *                     completionDate:
+ *                       type: string
  *     responses:
  *       201:
- *         description: Qualifications created
+ *         description: Qualifications added successfully
  *       400:
- *         description: Invalid input
+ *         description: Validation error or already exists
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.post('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(createQualifications));
+router.post('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), createQualifications);
 
 /**
  * @swagger
- * /profile/qualifications:
+ * /api/profile/qualifications:
  *   put:
- *     summary: Update qualifications
+ *     summary: Update all qualifications
  *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
@@ -126,42 +226,53 @@ router.post('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), callback
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Qualifications'
+ *             type: object
+ *             properties:
+ *               degrees:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *               certifications:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *               licences:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *               courses:
+ *                 type: array
+ *                 items:
+ *                   type: object
  *     responses:
  *       200:
- *         description: Qualifications updated
- *       400:
- *         description: Invalid input
+ *         description: Qualifications updated successfully
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.put('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(updateQualifications));
+router.put('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), updateQualifications);
 
 /**
  * @swagger
- * /profile/qualifications:
+ * /api/profile/qualifications:
  *   get:
- *     summary: Get qualifications
+ *     summary: Get all qualifications
  *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Qualifications retrieved
+ *         description: Qualifications retrieved successfully
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.get('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getQualifications));
+router.get('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), getQualifications);
 
 /**
  * @swagger
- * /profile/employment:
+ * /api/profile/employment:
  *   post:
- *     summary: Create employment history
+ *     summary: Add employment history
  *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
@@ -170,22 +281,41 @@ router.get('/qualifications', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Employment'
+ *             type: object
+ *             properties:
+ *               employment:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     companyName:
+ *                       type: string
+ *                       example: Axiata Digital Labs
+ *                     jobTitle:
+ *                       type: string
+ *                       example: Software Engineering Intern
+ *                     startDate:
+ *                       type: string
+ *                       example: "2024-01-01"
+ *                     endDate:
+ *                       type: string
+ *                       example: "2024-09-30"
+ *                     isCurrent:
+ *                       type: boolean
+ *                       example: false
  *     responses:
  *       201:
- *         description: Employment history created
+ *         description: Employment history created successfully
  *       400:
- *         description: Invalid input
+ *         description: Validation error
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.post('/employment', authMiddleware, callback(createEmployment));
+router.post('/employment', authMiddleware(['ALUMNI', 'DEVELOPER']), createEmployment);
 
 /**
  * @swagger
- * /profile/employment:
+ * /api/profile/employment:
  *   put:
  *     summary: Update employment history
  *     tags: [Profile]
@@ -196,22 +326,39 @@ router.post('/employment', authMiddleware, callback(createEmployment));
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Employment'
+ *             type: object
+ *             properties:
+ *               employment:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     uuid:
+ *                       type: string
+ *                       description: Include uuid to update existing entry
+ *                     companyName:
+ *                       type: string
+ *                     jobTitle:
+ *                       type: string
+ *                     startDate:
+ *                       type: string
+ *                     endDate:
+ *                       type: string
+ *                     isCurrent:
+ *                       type: boolean
  *     responses:
  *       200:
- *         description: Employment history updated
+ *         description: Employment history updated successfully
  *       400:
- *         description: Invalid input
+ *         description: Validation error
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.put('/employment', authMiddleware, callback(updateEmployment));
+router.put('/employment', authMiddleware(['ALUMNI', 'DEVELOPER']), updateEmployment);
 
 /**
  * @swagger
- * /profile/employment:
+ * /api/profile/employment:
  *   get:
  *     summary: Get employment history
  *     tags: [Profile]
@@ -219,13 +366,11 @@ router.put('/employment', authMiddleware, callback(updateEmployment));
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Employment history retrieved
+ *         description: Employment history retrieved successfully
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.get('/employment', authMiddleware, callback(getEmployment));
+router.get('/employment', authMiddleware(['ALUMNI', 'DEVELOPER']), getEmployment);
 
 /**
  * @swagger
@@ -255,7 +400,7 @@ router.get('/employment', authMiddleware, callback(getEmployment));
  *       403:
  *         description: Forbidden
  */
-router.post('/image', authMiddleware, upload.single('image'), callback(uploadProfileImage));
+router.post('/image', authMiddleware, upload.single('image'), uploadProfileImage);
 
 /**
  * @swagger
@@ -273,6 +418,6 @@ router.post('/image', authMiddleware, upload.single('image'), callback(uploadPro
  *       403:
  *         description: Forbidden
  */
-router.get('/image', authMiddleware, callback(getProfileImage));
+router.get('/image', authMiddleware, getProfileImage);
 
 module.exports = router;
