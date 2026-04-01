@@ -111,8 +111,6 @@ async function getPersonalInfo(req, res) {
     }
 }
 
-// ─── qualifications ───────────────────────────────────────────────────────────
-
 async function createQualifications(req, res) {
     logger.info(logVar + 'In createQualifications');
 
@@ -120,7 +118,6 @@ async function createQualifications(req, res) {
     const { degrees = [], certifications = [], licences = [], courses = [] } = req.body;
 
     try {
-        // check if any qualifications already exist
         const existing = await Promise.all([
             models.degrees.findAll({ where: { userId } }),
             models.certifications.findAll({ where: { userId } }),
@@ -156,7 +153,6 @@ async function updateQualifications(req, res) {
     const { degrees = [], certifications = [], licences = [], courses = [] } = req.body;
 
     try {
-        // delete all existing
         await Promise.all([
             models.degrees.destroy({ where: { userId } }),
             models.certifications.destroy({ where: { userId } }),
@@ -164,7 +160,6 @@ async function updateQualifications(req, res) {
             models.professionalCourses.destroy({ where: { userId } }),
         ]);
 
-        // insert new data
         await Promise.all([
             degrees.length > 0 ? models.degrees.bulkCreate(degrees.map(d => ({ ...d, userId, createdBy: userId, updatedBy: userId }))) : Promise.resolve(),
             certifications.length > 0 ? models.certifications.bulkCreate(certifications.map(c => ({ ...c, userId, createdBy: userId, updatedBy: userId }))) : Promise.resolve(),
@@ -202,8 +197,6 @@ async function getQualifications(req, res) {
         return res.status(400).json({ message: error.message });
     }
 }
-
-// ─── employment history ───────────────────────────────────────────────────────
 
 async function createEmployment(req, res) {
     logger.info(logVar + 'In createEmployment');
@@ -317,18 +310,17 @@ async function uploadProfileImage(req, res) {
     const file = req.file;
 
     if (!file) {
+        logger.warn(logVar + 'No file provided in request');
         return res.status(400).json({ message: 'No image file provided' });
     }
 
     try {
-        // soft delete old image
         await models.profileImages.update(
             { isDeleted: true, updatedBy: userId },
             { where: { userId, isDeleted: false } }
         );
 
         const publicId = `user_${userId}_${Date.now()}`;
-
         const result = await uploadToCloudinary(
             file.buffer,
             'alumni-platform/profile-images',
@@ -344,15 +336,11 @@ async function uploadProfileImage(req, res) {
         });
 
         await models.userDetails.update(
-            {
-                profileImageId: profileImage.id,
-                updatedBy: userId,
-            },
+            { profileImageId: profileImage.id, updatedBy: userId },
             { where: { userId } }
         );
 
         logger.info(logVar + 'Profile image uploaded for userId: ' + userId);
-
         return res.status(201).json({
             message: 'Profile image uploaded successfully',
             data: {
@@ -362,7 +350,7 @@ async function uploadProfileImage(req, res) {
         });
 
     } catch (error) {
-        logger.error(logVar + 'Error uploading image: ' + error.message);
+        logger.error(logVar + 'Error uploading profile image: ' + error.message);
         return res.status(400).json({ message: error.message });
     }
 }
@@ -381,11 +369,12 @@ async function getProfileImage(req, res) {
             return res.status(404).json({ message: 'No profile image found' });
         }
 
+        logger.info(logVar + 'Profile image retrieved for userId: ' + userId);
         return res.status(200).json({ data: image });
 
     } catch (error) {
-        logger.error(logVar + 'Error getting image: ' + error.message);
-        return res.status(500).json({ message: error.message });
+        logger.error(logVar + 'Error getting profile image: ' + error.message);
+        return res.status(404).json({ message: error.message });
     }
 }
 

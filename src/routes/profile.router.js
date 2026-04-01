@@ -374,7 +374,7 @@ router.get('/employment', authMiddleware(['ALUMNI', 'DEVELOPER']), getEmployment
 
 /**
  * @swagger
- * /profile/image:
+ * /api/profile/image:
  *   post:
  *     summary: Upload profile image
  *     tags: [Profile]
@@ -392,32 +392,30 @@ router.get('/employment', authMiddleware(['ALUMNI', 'DEVELOPER']), getEmployment
  *                 format: binary
  *     responses:
  *       201:
- *         description: Profile image uploaded
+ *         description: Profile image uploaded successfully
  *       400:
- *         description: Invalid input
+ *         description: No image provided or upload error
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.post('/image', authMiddleware, upload.single('image'), uploadProfileImage);
+router.post('/image', authMiddleware(['ALUMNI', 'DEVELOPER']), upload.single('image'), uploadProfileImage);
 
 /**
  * @swagger
- * /profile/image:
+ * /api/profile/image:
  *   get:
- *     summary: Get profile image
+ *     summary: Get current profile image
  *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Profile image retrieved
+ *         description: Profile image retrieved successfully
+ *       404:
+ *         description: No profile image found
  *       401:
  *         description: Unauthorized
- *       403:
- *         description: Forbidden
  */
-router.get('/image', authMiddleware, getProfileImage);
+router.get('/image', authMiddleware(['ALUMNI', 'DEVELOPER']), getProfileImage);
 
 module.exports = router;
