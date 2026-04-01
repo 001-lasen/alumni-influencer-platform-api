@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-require('dotenv').config({
-    path: require('path').resolve(__dirname, 'env/.env.' + (process.env.NODE_ENV || 'local')),
-});
+if (process.env.NODE_ENV !== 'develop') {
+    require('dotenv').config({
+        path: require('path').resolve(__dirname, 'env/.env.' + (process.env.NODE_ENV || 'local')),
+    });
+}
 
 const logger = require('./src/utils/logger');
 
@@ -29,10 +31,12 @@ const server = http.createServer(app);
         await db.sequelize.sync({ alter: true });
         logger.info('Models synced');
 
-        server.listen(port, () => {
-            logger.info(`Server running on http://localhost:${port}`);
-            startAllJobs();
-        });
+        if (process.env.NODE_ENV !== 'develop') {
+            server.listen(port, () => {
+                logger.info(`Server running on http://localhost:${port}`);
+                startAllJobs();
+            });
+        }
     } catch (err) {
         logger.error('Failed to start server:', err);
         process.exit(1);
@@ -56,3 +60,5 @@ process.on('SIGINT', async () => {
         process.exit(0);
     });
 });
+
+module.exports = app;
