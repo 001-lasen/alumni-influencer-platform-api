@@ -6,7 +6,7 @@ const options = {
         info: {
             title: 'Alumni Influencer Platform API',
             version: '1.0.0',
-            description: 'REST API for the Eastminster Alumni Influencer Platform',
+            description: 'REST API for the Eastminster Alumni Influencer Platform.',
             contact: {
                 name: 'Eastminster Alumni Platform',
                 email: 'w1952526@westminster.ac.uk'
