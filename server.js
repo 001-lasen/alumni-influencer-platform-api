@@ -27,16 +27,18 @@ const server = http.createServer(app);
         await db.sequelize.authenticate();
         logger.info('Database connected');
 
-        logger.info('Syncing models...'    );
+        logger.info('Syncing models...');
         await db.sequelize.sync({ alter: true });
         logger.info('Models synced');
 
-        if (process.env.NODE_ENV !== 'develop') {
-            server.listen(port, () => {
-                logger.info(`Server running on http://localhost:${port}`);
+        server.listen(port, () => {
+            logger.info(`Server running on port ${port}`);
+
+            if (process.env.NODE_ENV !== 'develop') {
                 startAllJobs();
-            });
-        }
+            }
+        });
+
     } catch (err) {
         logger.error('Failed to start server:', err);
         process.exit(1);
