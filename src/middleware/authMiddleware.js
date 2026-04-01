@@ -1,8 +1,7 @@
 const jwtUtil = require('../utils/jwtUtil');
 const logger = require('../utils/logger');
-const logVar = ' Middleware | authMiddleware | ';
-const repositories = require('../repositories/index');
-const tokenBlacklistRepository = repositories.tokenBlacklistRepository;
+const logVar = 'Middleware | authMiddleware | ';
+const models = require('../models');
 
 module.exports = function authMiddleware(requiredRole = null) {
     return async function (req, res, next) {
@@ -18,7 +17,7 @@ module.exports = function authMiddleware(requiredRole = null) {
         try {
             const decoded = jwtUtil.verifyAccessToken(token);
 
-            const blacklisted = await tokenBlacklistRepository.isTokenBlacklisted(token);
+            const blacklisted = await models.tokenBlacklist.findOne({where: {token}});
             if (blacklisted) {
                 logger.warn(logVar + 'Token is blacklisted');
                 return res.status(401).json({message: 'Unauthorized'});
@@ -27,14 +26,12 @@ module.exports = function authMiddleware(requiredRole = null) {
             req.user = decoded;
             logger.info(logVar + 'Token verified for userId: ' + decoded.userId);
 
-            // check role if required
-            const requiredRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
-            if (
-                requiredRole &&
-                !req.user.roles?.some(role => requiredRoles.includes(role))
-            ) {
-                logger.warn(logVar + 'Insufficient role for userId: ' + decoded.userId);
-                return res.status(403).json({message: 'Forbidden'});
+            if (requiredRole) {
+                const requiredRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+                if (!req.user.roles?.some(role => requiredRoles.includes(role))) {
+                    logger.warn(logVar + 'Insufficient role for userId: ' + decoded.userId);
+                    return res.status(403).json({message: 'Forbidden'});
+                }
             }
 
             next();
