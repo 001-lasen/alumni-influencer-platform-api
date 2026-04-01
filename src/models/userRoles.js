@@ -11,12 +11,10 @@ const UserRoles = sequelize.define('UserRoles', {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         allowNull: false,
-        unique: true,
     },
     roleName: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
     },
     description: {
         type: DataTypes.STRING,
@@ -32,7 +30,11 @@ const UserRoles = sequelize.define('UserRoles', {
     }
 },{
     tableName: 'user_roles',
-    timestamps: true
+    timestamps: true,
+    indexes: [
+        { unique: true, fields: ['uuid'] },
+        { unique: true, fields: ['roleName'] },
+    ]
 });
 
 module.exports = UserRoles;

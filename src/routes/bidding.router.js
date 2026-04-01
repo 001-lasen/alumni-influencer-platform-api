@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const callback = require('../utils/callback');
 const authMiddleware = require('../middleware/authMiddleware');
 const {
     placeBid,
     getBidStatus,
-    getBiddingHistory,
+    getBidHistory,
     getMonthlyLimitStatus,
     getTomorrowSlot,
     getAlumniOfTheDay,
-} = require('../controllers');
+} = require('../controllers/biddingController');
 
 /**
  * @swagger
@@ -46,7 +45,7 @@ const {
  *       400:
  *         description: Validation error or bidding closed
  */
-router.post('/place', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(placeBid));
+router.post('/place', authMiddleware(['ALUMNI', 'DEVELOPER']), placeBid);
 
 /**
  * @swagger
@@ -62,7 +61,7 @@ router.post('/place', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(placeBid
  *       401:
  *         description: Unauthorized
  */
-router.get('/status', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getBidStatus));
+router.get('/status', authMiddleware(['ALUMNI', 'DEVELOPER']), getBidStatus);
 
 /**
  * @swagger
@@ -78,7 +77,7 @@ router.get('/status', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getBidSt
  *       401:
  *         description: Unauthorized
  */
-router.get('/history', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getBiddingHistory));
+router.get('/history', authMiddleware(['ALUMNI', 'DEVELOPER']), getBidHistory);
 
 /**
  * @swagger
@@ -94,7 +93,7 @@ router.get('/history', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getBidd
  *       401:
  *         description: Unauthorized
  */
-router.get('/monthly-limit', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getMonthlyLimitStatus));
+router.get('/monthly-limit', authMiddleware(['ALUMNI', 'DEVELOPER']), getMonthlyLimitStatus);
 
 /**
  * @swagger
@@ -110,7 +109,7 @@ router.get('/monthly-limit', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(g
  *       401:
  *         description: Unauthorized
  */
-router.get('/tomorrow', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getTomorrowSlot));
+router.get('/tomorrow', authMiddleware(['ALUMNI', 'DEVELOPER']), getTomorrowSlot);
 
 /**
  * @swagger
@@ -130,6 +129,6 @@ router.get('/tomorrow', authMiddleware(['ALUMNI', 'DEVELOPER']), callback(getTom
  *       200:
  *         description: Alumni of the day retrieved
  */
-router.get('/alumni-of-the-day/:date', callback(getAlumniOfTheDay));
+router.get('/alumni-of-the-day/:date', getAlumniOfTheDay);
 
 module.exports = router;
