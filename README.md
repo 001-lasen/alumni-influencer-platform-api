@@ -1,61 +1,94 @@
 # Alumni Influencer Platform API
 
-A Node.js/Express.js RESTful API for managing an alumni influencer platform. This API enables alumni to connect, collaborate, and build influence within their network.
+A Node.js/Express.js RESTful API for the University of Eastminster's Alumni Influencer Platform. The platform enables alumni to create profiles, participate in a blind bidding system to become "Alumni of the Day", and allows external developers to access alumni data via API keys.
 
 ## Features
 
-- **Express.js Framework**: Fast and minimalist web framework for Node.js
-- **Environment Configuration**: Support for multiple environment configurations (local, production)
-- **Request Logging**: Morgan middleware for HTTP request logging
-- **Cookie Parsing**: Built-in cookie parsing support
-- **Static File Serving**: Serve static files from the public directory
-- **View Engine**: Pug template engine for server-side rendering
-- **Error Handling**: Centralized error handling middleware
+- **Alumni Registration & Authentication** — Email-based registration with university domain validation, OTP email verification, JWT access/refresh token authentication, password reset flow
+- **Alumni Profile Management** — Personal info, biography, LinkedIn profile, degrees, certifications, licences, professional courses, employment history, and Cloudinary profile image upload
+- **Blind Bidding System** — Daily bidding for featured "Alumni of the Day" slot, blind bidding with win/lose feedback, monthly win limits, automated winner selection via cron job
+- **Security** — JWT bearer tokens, refresh token rotation, token blacklisting, role-based access control, bcrypt password hashing, input validation, rate limiting
+- **Public Developer API** — API key authentication for external clients, usage statistics, key revocation
+- **Swagger Documentation** — Interactive API documentation at `/api-docs`
 
 ## Tech Stack
 
-- **Runtime**: Node.js (v14+)
-- **Framework**: Express.js ~4.16.1
-- **Template Engine**: Pug 2.0.0-beta11
-- **Middleware**:
-  - morgan ~1.9.1 (HTTP request logger)
-  - cookie-parser ~1.4.4 (Cookie parsing)
-- **Environment Management**: dotenv ^17.3.1
-- **Error Handling**: http-errors ~1.6.3
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MySQL via Sequelize ORM
+- **Authentication**: JWT (jsonwebtoken)
+- **Password Hashing**: bcrypt
+- **Email**: Nodemailer with Gmail
+- **Image Upload**: Cloudinary + Multer
+- **Scheduling**: node-cron
+- **Documentation**: Swagger UI (swagger-jsdoc + swagger-ui-express)
+- **Logging**: Winston
 
 ## Project Structure
 
 ```
 alumni-influencer-platform-api/
-├── bin/
-│   └── www                    # Application startup script
-├── public/                    # Static files
-│   ├── images/               # Image assets
-│   ├── javascripts/          # Client-side JavaScript
-│   └── stylesheets/          # CSS styles
 ├── src/
-│   ├── controllers/          # Route controllers (business logic)
-│   ├── routes/               # API route definitions
-│   ├── services/             # Business logic and utilities
-│   └── utils/
-│       └── logger.js         # Logging utilities
-├── views/                    # Pug templates
-│   ├── layout.pug           # Main layout template
-│   ├── index.pug            # Home page template
-│   └── error.pug            # Error page template
-├── env/                      # Environment configuration files
-├── app.js                    # Express app initialization
-├── server.js                 # Server startup entry point
-├── package.json              # Project dependencies and scripts
-└── README.md                 # This file
+│   ├── config/               # Sequelize, Cloudinary, Swagger config
+│   ├── controllers/          # MVC controllers (business logic + DB access)
+│   │   ├── authController.js
+│   │   ├── profileController.js
+│   │   ├── biddingController.js
+│   │   └── utilitiesController.js
+│   ├── jobs/                 # Cron jobs
+│   │   ├── index.js          # Job scheduler (runs daily at 18:00)
+│   │   └── winnerSelection.job.js
+│   ├── middleware/           # Express middleware
+│   │   └── authMiddleware.js # JWT verification + role-based access
+│   ├── models/               # Sequelize models
+│   │   ├── users.js
+│   │   ├── userDetails.js
+│   │   ├── userRoles.js
+│   │   ├── userRoleUserMapping.js
+│   │   ├── degrees.js
+│   │   ├── certifications.js
+│   │   ├── licences.js
+│   │   ├── professionalCourses.js
+│   │   ├── employmentHistory.js
+│   │   ├── profileImages.js
+│   │   ├── refreshToken.js
+│   │   ├── tokenBlacklist.js
+│   │   ├── bids.js
+│   │   ├── alumniOfTheDay.js
+│   │   └── alumniEvents.js
+│   ├── routes/               # Express routers with Swagger docs
+│   │   ├── index.js
+│   │   ├── users.router.js
+│   │   ├── profile.router.js
+│   │   ├── bidding.router.js
+│   │   └── utilities.router.js
+│   └── utils/                # Shared utilities
+│       ├── logger.js         # Winston logger
+│       ├── emailUtil.js      # Nodemailer email sending
+│       ├── encryption.js     # bcrypt hashing
+│       ├── jwtUtil.js        # JWT token generation/verification
+│       ├── otp.js            # OTP generation
+│       ├── constants.js      # Environment variable constants
+│       ├── enums.js          # Application enums
+│       └── templates/        # Email HTML templates
+├── env/                      # Environment files (gitignored)
+│   └── .env.local            # Local environment variables
+├── resources/                # Dummy images for testing
+├── app.js                    # Express app setup
+├── server.js                 # Server entry point
+├── vercel.json               # Vercel deployment config
+├── .env.example              # Environment variable template
+├── package.json
+└── README.md
 ```
 
 ## Installation
 
 ### Prerequisites
 
-- Node.js v14 or higher
-- npm (Node Package Manager)
+- Node.js v18 or higher
+- MySQL 8.0 or higher
+- npm
 
 ### Setup Steps
 
@@ -71,191 +104,165 @@ alumni-influencer-platform-api/
    ```
 
 3. **Configure environment variables**
-   Create an environment file in the `env/` directory:
    ```bash
-   touch env/.env.local
+   cp .env.example env/.env.local
+   ```
+   Fill in the values in `env/.env.local` — see [Environment Variables](#environment-variables) below.
+
+4. **Create the database**
+   ```bash
+   mysql -u root -p
+   CREATE DATABASE alumni-platform-db-dev;
    ```
 
-   Add the following configuration (adjust as needed):
+5. **Start the server**
+   ```bash
+   npm start
    ```
-   NODE_ENV=local
-   PORT=3000
-   ```
+   The server will sync all models automatically on startup.
+
+## Environment Variables
+
+Create `env/.env.local` with the following variables (see `.env.example` for reference):
+
+| Variable | Description |
+|----------|-------------|
+| `PORT` | Server port (default: 3000) |
+| `DB_HOST` | MySQL host |
+| `DB_PORT` | MySQL port (default: 3306) |
+| `DB_USER` | MySQL username |
+| `DB_PASSWORD` | MySQL password |
+| `DB_NAME` | Database name |
+| `DB_DIALECT` | Database dialect (`mysql`) |
+| `BCRYPT_ROUNDS` | bcrypt salt rounds (default: 12) |
+| `JWT_SECRET` | JWT access token secret |
+| `JWT_EXPIRES_IN` | JWT access token expiry (e.g. `1h`) |
+| `JWT_REFRESH_SECRET` | JWT refresh token secret |
+| `JWT_REFRESH_EXPIRES_IN` | JWT refresh token expiry (e.g. `7d`) |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
+| `EMAIL_USER` | Gmail address for sending emails |
+| `EMAIL_PASSWORD` | Gmail app password |
+| `ALLOWED_EMAIL_DOMAINS` | Comma-separated allowed domains (e.g. `iit.ac.lk,eastminster.ac.uk`) |
 
 ## Running the Application
 
-### Development Mode
-
-Start the server in local/development environment:
 ```bash
+# Local development
 npm start
-```
 
-Expected output:
-```
-Server running on port 3000
-```
-
-The server will be accessible at `http://localhost:3000`
-
-### Production Mode
-
-Start the server in production environment:
-```bash
+# Production
 npm run start:prod
 ```
 
-This will load environment variables from `env/.env.prod`
+## API Documentation
 
-## API Endpoints
-
-### Home Page
-- **GET** `/`
-  - Returns the home page rendered with the Pug template
-  - Response: HTML page with title "Express"
-
-## Configuration
-
-The application uses dotenv for environment configuration with support for multiple environments:
-
-### Environment Files
-
-Create the following files in the `env/` directory:
-
-- **`env/.env.local`** - Development environment variables (default)
-- **`env/.env.prod`** - Production environment variables
-
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `NODE_ENV` | `local` | Environment mode (local, dev, prod) |
-| `PORT` | `3000` | Server port number |
-
-## Development
-
-### Project Architecture
-
-The project follows a modular architecture:
-
+Once the server is running, visit:
 ```
-Routes (src/routes/)
-   ↓
-Controllers (src/controllers/)
-   ↓
-Services (src/services/)
-   ↓
-Utilities & Helpers (src/utils/)
+http://localhost:3000/api-docs
 ```
 
-### Adding New Routes
+Interactive Swagger UI with all endpoints documented.
 
-1. Create a new route file in `src/routes/`
-2. Define route handlers
-3. Import and use in `app.js`
+## API Overview
 
-Example:
-```javascript
-var express = require('express');
-var router = express.Router();
+### Authentication (`/api/users`)
 
-router.get('/alumni', function(req, res) {
-  res.json({ message: 'Alumni list' });
-});
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/create-user` | Public | Register new alumni |
+| POST | `/verify-email` | Public | Verify email with OTP |
+| GET | `/resend-otp` | Public | Resend verification OTP |
+| POST | `/login` | Public | Login and get tokens |
+| POST | `/logout` | Bearer | Logout and invalidate tokens |
+| POST | `/refresh` | Public | Refresh access token |
+| POST | `/forgot-password` | Public | Send password reset OTP |
+| POST | `/verify-forgot-password-otp` | Public | Verify reset OTP |
+| POST | `/reset-password` | Public | Reset password |
+| POST | `/change-password` | Bearer | Change password |
+| GET | `/user-details` | Public | Get all alumni profiles |
 
-module.exports = router;
-```
+### Profile (`/api/profile`)
 
-### Adding Controllers
+| Method | Endpoint          | Auth | Description               |
+|--------|-------------------|------|---------------------------|
+| POST | `/personal`       | Bearer | Create personal info      |
+| PUT | `/personal`       | Bearer | Update personal info      |
+| GET | `/user-details`   | Bearer | Get all user details      |
+| POST | `/qualifications` | Bearer | Add qualifications        |
+| PUT | `/qualifications` | Bearer | Update qualifications     |
+| GET | `/qualifications` | Bearer | Get qualifications        |
+| POST | `/employment`     | Bearer | Add employment history    |
+| PUT | `/employment`     | Bearer | Update employment history |
+| GET | `/employment`     | Bearer | Get employment history    |
+| POST | `/image`          | Bearer | Upload profile image      |
+| GET | `/image`          | Bearer | Get profile image         |
 
-Controllers contain business logic for route handlers. Place them in `src/controllers/`.
+### Bidding (`/api/bidding`)
 
-### Adding Services
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/place` | Bearer | Place or update a bid |
+| GET | `/status` | Bearer | Get bid status (winning/losing) |
+| GET | `/history` | Bearer | Get bid history |
+| GET | `/monthly-limit` | Bearer | Get monthly win limit status |
+| GET | `/tomorrow` | Bearer | Get tomorrow's slot info |
+| GET | `/alumni-of-the-day/:date` | Public | Get alumni of the day |
 
-Services contain reusable business logic and data access operations. Place them in `src/services/`.
+### Utilities (`/api/utilities`)
 
-## Logging
+| Method | Endpoint | Auth | Description                                      |
+|--------|----------|------|--------------------------------------------------|
+| POST | `/hashing` | Bearer | Hash a string (testing only)                     |
+| POST | `/trigger-winner-selection` | Public | Manually trigger winner selection (testing only) |
 
-The application uses Morgan middleware for HTTP request logging. Logs are output in 'dev' format, providing:
-- HTTP method
-- Route path
-- Status code
-- Response time
-- Request size
+## Architecture
 
-Custom logging utilities are available in `src/utils/logger.js`
+This project follows the **MVC (Model-View-Controller)** pattern:
 
-## Error Handling
+- **Model** — Sequelize models define the database schema and relationships
+- **View** — JSON responses (REST API, client agnostic)
+- **Controller** — Express controllers handle requests, business logic, and direct DB access via Sequelize models
 
-The application includes centralized error handling:
-- 404 errors are caught and forwarded to the error handler
-- All errors are logged with status code and message
-- Error pages are rendered using the Pug template engine
+### Security Implementation
 
-## Scripts
+- Passwords hashed with **bcrypt** (12 salt rounds)
+- **JWT access tokens** (1 hour expiry) sent in Authorization header
+- **JWT refresh tokens** (7 days) stored in httpOnly cookies
+- **Token blacklist** — revoked access tokens stored in DB until expiry
+- **Role-based access control** — `ALUMNI` and `DEVELOPER` roles enforced via middleware
+- University domain validation on registration
 
-| Script | Description |
+### Bidding System
+
+- Alumni bid for a 24-hour featured slot (Alumni of the Day)
+- **Blind bidding** — bidders see winning/losing status but not the actual highest bid
+- Bids can only be increased, never decreased
+- Winner selected daily at **6 PM (Europe/London)** via cron job
+- Monthly win limit: **3 wins per month** (4 with alumni event attendance)
+- Winner receives email notification
+
+## Cron Jobs
+
+| Job | Schedule | Description |
+|-----|----------|-------------|
+| Winner Selection | Daily at 18:00 (Europe/London) | Selects highest eligible bidder for next day's slot |
+
+## Branches
+
+| Branch | Description |
 |--------|-------------|
-| `npm start` | Start server in local/development mode (PORT 3000) |
-| `npm run start:prod` | Start server in production mode |
-
-## Troubleshooting
-
-### Module Not Found: 'dotenv'
-
-If you encounter an error like "Cannot find module 'dotenv'":
-
-```bash
-npm install
-```
-
-Make sure dependencies are properly installed.
-
-### Port Already in Use
-
-If port 3000 is already in use, specify a different port:
-```bash
-PORT=3001 npm start
-```
-
-### Missing Environment Files
-
-Ensure the `env/` directory exists and contains the appropriate `.env` files for your environment.
-
-## Security Considerations
-
-- Keep `.env` files out of version control (add to `.gitignore`)
-- Never commit sensitive credentials or API keys
-- Use environment variables for all configuration
-- Validate and sanitize all user inputs
-- Use HTTPS in production environments
-
-## Future Enhancements
-
-- [ ] Database integration (MongoDB/PostgreSQL)
-- [ ] Authentication & Authorization (JWT)
-- [ ] Alumni profile management
-- [ ] Influencer collaboration features
-- [ ] API documentation (Swagger/OpenAPI)
-- [ ] Unit and integration tests
-- [ ] Deployment configuration (Docker, CI/CD)
-
-## Contributing
-
-1. Create a feature branch (`git checkout -b feature/amazing-feature`)
-2. Commit your changes (`git commit -m 'Add amazing feature'`)
-3. Push to the branch (`git push origin feature/amazing-feature`)
-4. Open a Pull Request
+| `main` | Production-ready branch |
+| `intermediate` | Common integration branch for all ongoing changes |
+| `feature/*` | Feature branches created from `intermediate` |
 
 ## License
 
 This project is private. All rights reserved.
 
-## Support
-
-For issues or questions, please contact the development team or create an issue in the project repository.
-
 ---
 
-**Last Updated**: February 2026
-**Version**: 0.0.0
+- **Module**: 6COSC022C.2 Advanced Server Side Web Development
+- **Institution**: University of Westminster / Informatics Institute of Technology (IIT)
+- **Academic Year**: 2025/26
