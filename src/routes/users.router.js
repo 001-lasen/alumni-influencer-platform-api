@@ -1,19 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const callback = require('../utils/callback');
 const authMiddleware = require('../middleware/authMiddleware');
 const {
     createUser,
-    userLogin,
+    verifyEmail,
     resendOTP,
-    verifyUserEmail,
-    refreshToken,
-    userLogout,
+    login,
+    logout,
+    refresh,
     changePassword,
     forgotPassword,
     verifyForgotPasswordOTP,
     resetPassword
-} = require('../controllers');
+} = require('../controllers/authController');
 
 /**
  * @swagger
@@ -33,7 +32,7 @@ const {
  *       400:
  *         description: Invalid input
  */
-router.post('/create-user', callback(createUser));
+router.post('/create-user', createUser);
 
 /**
  * @swagger
@@ -53,7 +52,7 @@ router.post('/create-user', callback(createUser));
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', callback(userLogin));
+router.post('/login', login);
 
 /**
  * @swagger
@@ -74,7 +73,7 @@ router.post('/login', callback(userLogin));
  *       400:
  *         description: Invalid email
  */
-router.get('/resend-otp', callback(resendOTP));
+router.get('/resend-otp', resendOTP);
 
 /**
  * @swagger
@@ -94,7 +93,7 @@ router.get('/resend-otp', callback(resendOTP));
  *       400:
  *         description: Invalid OTP or email
  */
-router.post('/verify-email', callback(verifyUserEmail));
+router.post('/verify-email', verifyEmail);
 
 /**
  * @swagger
@@ -114,7 +113,7 @@ router.post('/verify-email', callback(verifyUserEmail));
  *       401:
  *         description: Invalid refresh token
  */
-router.post('/refresh', callback(refreshToken));
+router.post('/refresh', refresh);
 
 /**
  * @swagger
@@ -130,7 +129,7 @@ router.post('/refresh', callback(refreshToken));
  *       401:
  *         description: Unauthorized
  */
-router.post('/logout', authMiddleware(['ADMIN', 'ALUMNI', 'STUDENT', 'SPONSOR', 'DEVELOPER']), callback(userLogout));
+router.post('/logout', authMiddleware(['ADMIN', 'ALUMNI', 'STUDENT', 'SPONSOR', 'DEVELOPER']), logout);
 
 /**
  * @swagger
@@ -154,7 +153,7 @@ router.post('/logout', authMiddleware(['ADMIN', 'ALUMNI', 'STUDENT', 'SPONSOR', 
  *       401:
  *         description: Unauthorized
  */
-router.post('/change-password', authMiddleware(['ADMIN', 'ALUMNI', 'STUDENT', 'SPONSOR', 'DEVELOPER']), callback(changePassword));
+router.post('/change-password', authMiddleware(['ADMIN', 'ALUMNI', 'STUDENT', 'SPONSOR', 'DEVELOPER']), changePassword);
 
 /**
  * @swagger
@@ -174,7 +173,7 @@ router.post('/change-password', authMiddleware(['ADMIN', 'ALUMNI', 'STUDENT', 'S
  *       400:
  *         description: Invalid email
  */
-router.post('/forgot-password', callback(forgotPassword));
+router.post('/forgot-password', forgotPassword);
 
 /**
  * @swagger
@@ -194,7 +193,7 @@ router.post('/forgot-password', callback(forgotPassword));
  *       400:
  *         description: Invalid OTP
  */
-router.post('/verify-forgot-password-otp', callback(verifyForgotPasswordOTP));
+router.post('/verify-forgot-password-otp', verifyForgotPasswordOTP);
 
 /**
  * @swagger
@@ -214,6 +213,6 @@ router.post('/verify-forgot-password-otp', callback(verifyForgotPasswordOTP));
  *       400:
  *         description: Invalid input
  */
-router.post('/reset-password', callback(resetPassword));
+router.post('/reset-password', resetPassword);
 
 module.exports = router;

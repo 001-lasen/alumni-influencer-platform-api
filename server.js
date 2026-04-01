@@ -3,15 +3,16 @@ require('dotenv').config({
     path: require('path').resolve(__dirname, 'env/.env.' + (process.env.NODE_ENV || 'local')),
 });
 
+const logger = require('./src/utils/logger');
+
 if (!process.env.DB_HOST) {
-    console.warn('Missing DB_HOST env var. Check your env file.');
+    logger.warn('Missing DB_HOST env var. Check your env file.');
 }
 
 const http = require('http');
 const app = require('./app');
 const db = require('./src/models');
 const startAllJobs = require('./src/jobs');
-const repositories = require('./src/repositories');
 
 const port = process.env.PORT || 3000;
 app.set('port', port);
@@ -20,38 +21,38 @@ const server = http.createServer(app);
 
 (async () => {
     try {
-        console.log('Connecting to database...');
+        logger.info('Connecting to database...');
         await db.sequelize.authenticate();
-        console.log('Database connected');
+        logger.info('Database connected');
 
-        console.log('Syncing models...'    );
+        logger.info('Syncing models...'    );
         await db.sequelize.sync({ alter: true });
-        console.log('Models synced');
+        logger.info('Models synced');
 
         server.listen(port, () => {
-            console.log(`Server running on http://localhost:${port}`);
-            startAllJobs(repositories);
+            logger.info(`Server running on http://localhost:${port}`);
+            startAllJobs();
         });
     } catch (err) {
-        console.error('Failed to start server:', err);
+        logger.error('Failed to start server:', err);
         process.exit(1);
     }
 })();
 
 server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-        console.error(`Port ${port} is already in use.`);
+        logger.error(`Port ${port} is already in use.`);
         process.exit(1);
     } else {
-        console.error('Server error:', err);
+        logger.error('Server error:', err);
     }
 });
 
 process.on('SIGINT', async () => {
-    console.log('Shutting down server...');
+    logger.warn('Shutting down server...');
     await db.sequelize.close();
     server.close(() => {
-        console.log('Server closed cleanly');
+        logger.warn('Server closed cleanly');
         process.exit(0);
     });
 });
