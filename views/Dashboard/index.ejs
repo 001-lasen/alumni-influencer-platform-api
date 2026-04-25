@@ -1,0 +1,86 @@
+<%- include('partials/head') %>
+
+<div class="stats-grid">
+    <div class="stat-card" id="card-alumni">
+        <div class="stat-icon">🎓</div>
+        <div class="stat-value" id="totalAlumni">—</div>
+        <div class="stat-label">Total Alumni</div>
+    </div>
+    <div class="stat-card" id="card-certs">
+        <div class="stat-icon">📜</div>
+        <div class="stat-value" id="totalCertifications">—</div>
+        <div class="stat-label">Certifications Earned</div>
+    </div>
+    <div class="stat-card" id="card-degrees">
+        <div class="stat-icon">🏛️</div>
+        <div class="stat-value" id="totalDegrees">—</div>
+        <div class="stat-label">Degrees Recorded</div>
+    </div>
+    <div class="stat-card" id="card-employed">
+        <div class="stat-icon">💼</div>
+        <div class="stat-value" id="totalEmployed">—</div>
+        <div class="stat-label">Currently Employed</div>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>Top Programmes</h3>
+        <canvas id="programmesChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Employment by Sector</h3>
+        <canvas id="sectorsChart"></canvas>
+    </div>
+</div>
+
+<script>
+    (async () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return window.location.href = '/dashboard/login';
+
+        const headers = {'Authorization': `Bearer ${token}`};
+
+        // Summary cards
+        const sumRes = await fetch('/api/analytics/summary', {headers});
+        const sum = await sumRes.json();
+        if (!sumRes.ok) return window.location.href = '/dashboard/login';
+
+        document.getElementById('totalAlumni').textContent = sum.data.totalAlumni;
+        document.getElementById('totalCertifications').textContent = sum.data.totalCertifications;
+        document.getElementById('totalDegrees').textContent = sum.data.totalDegrees;
+        document.getElementById('totalEmployed').textContent = sum.data.totalEmployed;
+
+        // Programmes bar chart
+        const progRes = await fetch('/api/analytics/programmes', {headers});
+        const prog = await progRes.json();
+        new Chart(document.getElementById('programmesChart'), {
+            type: 'bar',
+            data: {
+                labels: prog.data.map(d => d.degreeName),
+                datasets: [{
+                    label: 'Alumni', data: prog.data.map(d => d.count),
+                    backgroundColor: '#6366f1'
+                }]
+            },
+            options: {responsive: true, plugins: {legend: {display: false}}}
+        });
+
+        // Sectors doughnut chart
+        const secRes = await fetch('/api/analytics/sectors', {headers});
+        const sec = await secRes.json();
+        new Chart(document.getElementById('sectorsChart'), {
+            type: 'doughnut',
+            data: {
+                labels: sec.data.map(d => d.sector || 'Unknown'),
+                datasets: [{
+                    data: sec.data.map(d => d.count),
+                    backgroundColor: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe']
+                }]
+            },
+            options: {responsive: true}
+        });
+    })();
+</script>
+
+<%- include('partials/foot') %>
