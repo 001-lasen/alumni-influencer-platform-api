@@ -1,0 +1,103 @@
+<%- include('partials/head') %>
+
+<div class="filters-bar">
+    <input type="text" id="filterProgramme" placeholder="Filter by programme..." class="filter-input"/>
+    <input type="number" id="filterYear" placeholder="Graduation year..." class="filter-input" style="width:180px"/>
+    <input type="text" id="filterSector" placeholder="Filter by sector..." class="filter-input"/>
+    <button class="btn-primary" id="applyFilters">Apply</button>
+    <button class="btn-secondary" id="exportCsv">Export CSV</button>
+</div>
+
+<div class="table-card">
+    <table id="alumniTable">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Programme</th>
+            <th>Graduation</th>
+            <th>Current Role</th>
+            <th>Sector</th>
+            <th>Company</th>
+        </tr>
+        </thead>
+        <tbody id="alumniBody">
+        <tr>
+            <td colspan="7" class="loading-row">Loading...</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    (async () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return window.location.href = '/dashboard/login';
+
+        const headers = {'Authorization': `Bearer ${token}`};
+        let allData = [];
+
+        const fetchAlumni = async () => {
+            const programme = document.getElementById('filterProgramme').value;
+            const year = document.getElementById('filterYear').value;
+            const sector = document.getElementById('filterSector').value;
+
+            const params = new URLSearchParams();
+            if (programme) params.set('programme', programme);
+            if (year) params.set('graduationYear', year);
+            if (sector) params.set('sector', sector);
+
+            const res = await fetch(`/api/analytics/alumni?${params}`, {headers});
+            const json = await res.json();
+            if (!res.ok) return window.location.href = '/dashboard/login';
+
+            allData = json.data;
+            renderTable(allData);
+        };
+
+        const renderTable = (data) => {
+            const tbody = document.getElementById('alumniBody');
+            if (!data.length) {
+                tbody.innerHTML = '<tr><td colspan="7" class="loading-row">No results found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(a => {
+                const degree = a.degrees?.[0];
+                const job = a.employmentHistory?.[0];
+                return `<tr>
+        <td>${a.firstName} ${a.lastName}</td>
+        <td>@${a.userName}</td>
+        <td>${degree?.degreeName || '—'}</td>
+        <td>${degree?.completionDate ? new Date(degree.completionDate).getFullYear() : '—'}</td>
+        <td>${job?.jobTitle || '—'}</td>
+        <td>${job?.sector || '—'}</td>
+        <td>${job?.companyName || '—'}</td>
+      </tr>`;
+            }).join('');
+        };
+
+        document.getElementById('applyFilters').addEventListener('click', fetchAlumni);
+
+        document.getElementById('exportCsv').addEventListener('click', () => {
+            const rows = [['Name', 'Username', 'Programme', 'Graduation', 'Role', 'Sector', 'Company']];
+            allData.forEach(a => {
+                const d = a.degrees?.[0];
+                const j = a.employmentHistory?.[0];
+                rows.push([
+                    `${a.firstName} ${a.lastName}`, a.userName,
+                    d?.degreeName || '', d?.completionDate ? new Date(d.completionDate).getFullYear() : '',
+                    j?.jobTitle || '', j?.sector || '', j?.companyName || ''
+                ]);
+            });
+            const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
+            a.download = 'alumni-export.csv';
+            a.click();
+        });
+
+        await fetchAlumni();
+    })();
+</script>
+
+<%- include('partials/foot') %>

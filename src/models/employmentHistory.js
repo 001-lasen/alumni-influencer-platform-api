@@ -24,6 +24,10 @@ const EmploymentHistory = sequelize.define('EmploymentHistory', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    sector: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     startDate: {
         type: DataTypes.DATEONLY,
         allowNull: false,

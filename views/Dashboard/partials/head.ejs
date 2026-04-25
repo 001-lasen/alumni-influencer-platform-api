@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><%= title %> — Alumni Analytics</title>
+    <link rel="stylesheet" href="/css/dashboard.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<nav class="sidebar">
+    <div class="sidebar-brand">Alumni<span>IQ</span></div>
+    <ul>
+        <li><a href="/dashboard">📊 Dashboard</a></li>
+        <li><a href="/dashboard/alumni">🎓 View Alumni</a></li>
+        <li><a href="/dashboard/graphs">📈 Graphs</a></li>
+        <li><a href="#" id="logoutBtn">🚪 Logout</a></li>
+    </ul>
+</nav>
+<main class="main-content">
+    <header class="topbar">
+        <h1><%= title %></h1>
+        <span id="userDisplay" class="user-badge"></span>
+    </header>
+    <div class="content-area">

@@ -1,0 +1,108 @@
+<%- include('partials/head') %>
+
+<div class="graphs-grid">
+    <div class="chart-card wide">
+        <h3>📈 Graduation Trend Over Time</h3>
+        <canvas id="graduationTrend"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>🏢 Top Employers</h3>
+        <canvas id="topEmployers"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>💼 Most Common Job Titles</h3>
+        <canvas id="jobTitles"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>📜 Top Certifications (Skills Gap)</h3>
+        <canvas id="certChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>📚 Top Post-Grad Courses</h3>
+        <canvas id="coursesChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>🎓 Alumni by Programme</h3>
+        <canvas id="programmePie"></canvas>
+    </div>
+</div>
+
+<script>
+    (async () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return window.location.href = '/dashboard/login';
+        const h = {'Authorization': `Bearer ${token}`};
+        const colors = ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#a78bfa', '#34d399', '#fbbf24'];
+
+        const [grad, employers, titles, certs, courses, prog] = await Promise.all([
+            fetch('/api/analytics/graduation-trend', {headers: h}).then(r => r.json()),
+            fetch('/api/analytics/top-employers', {headers: h}).then(r => r.json()),
+            fetch('/api/analytics/job-titles', {headers: h}).then(r => r.json()),
+            fetch('/api/analytics/certifications', {headers: h}).then(r => r.json()),
+            fetch('/api/analytics/professional-courses', {headers: h}).then(r => r.json()),
+            fetch('/api/analytics/programmes', {headers: h}).then(r => r.json()),
+        ]);
+
+        new Chart(document.getElementById('graduationTrend'), {
+            type: 'line',
+            data: {
+                labels: grad.data.map(d => d.year),
+                datasets: [{
+                    label: 'Graduates', data: grad.data.map(d => d.count),
+                    borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.4
+                }]
+            },
+            options: {responsive: true}
+        });
+
+        new Chart(document.getElementById('topEmployers'), {
+            type: 'bar',
+            data: {
+                labels: employers.data.map(d => d.companyName),
+                datasets: [{label: 'Alumni', data: employers.data.map(d => d.count), backgroundColor: '#06b6d4'}]
+            },
+            options: {indexAxis: 'y', responsive: true, plugins: {legend: {display: false}}}
+        });
+
+        new Chart(document.getElementById('jobTitles'), {
+            type: 'bar',
+            data: {
+                labels: titles.data.map(d => d.jobTitle),
+                datasets: [{label: 'Count', data: titles.data.map(d => d.count), backgroundColor: '#8b5cf6'}]
+            },
+            options: {indexAxis: 'y', responsive: true, plugins: {legend: {display: false}}}
+        });
+
+        new Chart(document.getElementById('certChart'), {
+            type: 'bar',
+            data: {
+                labels: certs.data.map(d => d.certificationName),
+                datasets: [{label: 'Alumni with cert', data: certs.data.map(d => d.count), backgroundColor: colors}]
+            },
+            options: {responsive: true, plugins: {legend: {display: false}}}
+        });
+
+        new Chart(document.getElementById('coursesChart'), {
+            type: 'radar',
+            data: {
+                labels: courses.data.map(d => d.courseName),
+                datasets: [{
+                    label: 'Completions', data: courses.data.map(d => d.count),
+                    backgroundColor: 'rgba(99,102,241,0.2)', borderColor: '#6366f1'
+                }]
+            },
+            options: {responsive: true}
+        });
+
+        new Chart(document.getElementById('programmePie'), {
+            type: 'pie',
+            data: {
+                labels: prog.data.map(d => d.degreeName),
+                datasets: [{data: prog.data.map(d => d.count), backgroundColor: colors}]
+            },
+            options: {responsive: true}
+        });
+    })();
+</script>
+
+<%- include('partials/foot') %>
