@@ -324,6 +324,38 @@ body.login-page {
     margin-bottom: 1rem;
 }
 
+.alert-success {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid var(--success);
+    color: var(--success);
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.tab-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.tab-btn {
+    flex: 1;
+    padding: 0.5rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+}
+.tab-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
     .stats-grid {
